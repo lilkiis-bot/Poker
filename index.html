@@ -41,7 +41,7 @@
 
         /* --- Game UI --- */
         .header { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; z-index: 10; font-weight: bold; font-size: 14px; color: #aaa; align-items: center;}
-        .top-btn { background: #222; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .top-btn { background: #222; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; color: white; }
         
         #winnerBanner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: rgba(243, 156, 18, 0.9); color: black; padding: 10px 20px; border-radius: 20px; font-weight: 900; z-index: 50; display: none; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 
@@ -83,7 +83,6 @@
         .player.waiting .status-mask { display: flex; content: "WAITING"; }
         .player.disconnected .status-mask { display: flex; color: #ff4757; }
 
-        /* Floating Chip Animation */
         .floating-text { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); font-size: 18px; font-weight: 900; color: #2ecc71; text-shadow: 0 2px 5px rgba(0,0,0,1); z-index: 100; pointer-events: none; animation: floatUp 2s ease-out forwards; }
         @keyframes floatUp { 0% { top: -20px; opacity: 1; transform: translateX(-50%) scale(1); } 100% { top: -80px; opacity: 0; transform: translateX(-50%) scale(1.5); } }
 
@@ -109,13 +108,30 @@
         #btnLeave { background: #c0392b; display: none; }
         #hostStartBtn { display: none; position: absolute; bottom: 120px; background: #198754; width: 200px; padding: 12px; border-radius: 20px; font-weight: bold; border: none; color: white; cursor: pointer; z-index: 30; }
 
+        /* 모바일 최적화 */
         @media (max-width: 600px) {
-            .table-container { height: 45vh; }
-            .poker-table { width: 95%; border-radius: 90px; border-width: 10px; }
-            :root { --card-w: 45px; --card-h: 65px; }
-            .card-top { font-size: 12px; }
-            .card-center { font-size: 18px; }
-            .controls { padding: 10px; bottom: 10px; border-radius: 10px; }
+            .table-container { height: 48vh; margin-top: 20px; }
+            .poker-table { width: 98%; border-radius: 100px; border-width: 8px; }
+            :root { --card-w: 36px; --card-h: 52px; }
+            .community-cards { gap: 4px; margin-bottom: 8px; }
+            .pot-info { font-size: 12px; padding: 4px 15px; }
+            .card-top { font-size: 10px; padding: 2px; }
+            .card-center { font-size: 16px; }
+
+            .player { width: 70px; }
+            .player-cards { margin-bottom: 2px; gap: -18px; }
+            .player-cards .card { transform: scale(0.55); margin: 0 -8px; } 
+            
+            .player-info { padding: 4px; border-radius: 6px; border-width: 1px; }
+            .player-name { font-size: 10px; }
+            .player-chips { font-size: 11px; margin-top: 1px; }
+            .player-timer { font-size: 9px; min-height: 12px; margin-top: 0; }
+            .player-bet { font-size: 10px; top: -20px; padding: 2px 6px; }
+
+            .controls { padding: 8px; bottom: 10px; border-radius: 10px; }
+            .action-row button { padding: 10px; font-size: 13px; }
+            .raise-row button { padding: 8px; font-size: 11px; }
+            .raise-row input { padding: 8px; font-size: 12px; }
         }
     </style>
 </head>
@@ -174,7 +190,6 @@
     </div>
 
 <script>
-    // --- Local Storage Token for Persistence ---
     let myToken = localStorage.getItem('pkr_token');
     if (!myToken) {
         myToken = Math.random().toString(36).substring(2) + Date.now();
@@ -184,14 +199,23 @@
     let peer = null; let connections = []; let hostConn = null;
     let isHost = false; let myId = ''; let myName = '';
     let hostLoopInterval = null; 
-    let prevChipsState = {}; // 애니메이션용 이전 칩 저장
-    
-    let gameState = {
-        phase: 'waiting', pot: 0, currentBet: 0, 
-        startingChips: 1000, baseBet: 10, dealerIndex: -1, 
-        turnEndTime: 0, 
-        communityCards: [], deck: [], turnIndex: 0, players: [], winnerMsg: '', nextGameTime: 0
-    };
+    let prevChipsState = {}; 
+    let gameState = {}; // 초기화용
+
+    // 🔥 패치 1: 방 입장/생성 시 모든 메모리 상태를 완벽 초기화하는 함수 (이전 방 유저 잔존 버그 해결)
+    function resetGame() {
+        if(peer) { peer.destroy(); peer = null; }
+        connections = [];
+        hostConn = null;
+        if(hostLoopInterval) clearInterval(hostLoopInterval);
+        gameState = {
+            phase: 'waiting', pot: 0, currentBet: 0, 
+            startingChips: 1000, baseBet: 10, dealerIndex: -1, 
+            turnEndTime: 0, communityCards: [], deck: [], turnIndex: 0, 
+            players: [], winnerMsg: '', nextGameTime: 0
+        };
+        prevChipsState = {};
+    }
 
     const suits = [{s:'♠', c:'black'}, {s:'♥', c:'red'}, {s:'♦', c:'red'}, {s:'♣', c:'black'}];
     const values = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
@@ -200,14 +224,13 @@
     function switchView(viewId) { document.querySelectorAll('.view').forEach(el => el.classList.remove('active')); document.getElementById(viewId).classList.add('active'); }
 
     function initPeer(id, callback) {
-        if(peer) peer.destroy();
-        peer = new Peer('pkrv2-' + id);
+        peer = new Peer('pkr-final-' + id);
         peer.on('open', callback);
-        peer.on('error', err => showStatus("Connection Error: Refresh or try different code."));
+        peer.on('error', err => showStatus("Connection Error. Please try again."));
     }
 
-    // --- Lobby Functions ---
     function createRoom() {
+        resetGame(); // 강제 초기화
         myName = document.getElementById('playerName').value || 'Host';
         gameState.startingChips = parseInt(document.getElementById('startChips').value) || 1000;
         gameState.baseBet = parseInt(document.getElementById('baseBet').value) || 10;
@@ -219,7 +242,6 @@
             isHost = true; myId = id;
             document.getElementById('roomInfo').innerText = 'Room: ' + roomCode;
             
-            // 호스트 추가
             gameState.players.push({ id: myId, token: myToken, name: myName, chips: gameState.startingChips, bet: 0, folded: false, isWaiting: false, acted: false, connected: true, hasLeft: false, cards: [] });
             
             peer.on('connection', conn => {
@@ -231,45 +253,54 @@
     }
 
     function joinRoom() {
+        resetGame(); // 강제 초기화
         myName = document.getElementById('playerName').value || 'Player';
         const code = document.getElementById('roomCode').value;
         if(code.length !== 4) return showStatus('Enter 4 digits.');
-        showStatus('Joining...');
+        showStatus('Joining... ⏳');
         const tempId = Math.random().toString(36).substring(7);
         initPeer(tempId, (id) => {
-            myId = id; hostConn = peer.connect('pkrv2-' + code);
+            myId = id; hostConn = peer.connect('pkr-final-' + code, { reliable: true });
+            
+            let joinTimeout = setTimeout(() => {
+                showStatus("Failed: Host is offline or Code is wrong.");
+                if(hostConn) hostConn.close();
+            }, 8000);
+
             hostConn.on('open', () => {
+                clearTimeout(joinTimeout);
                 isHost = false; document.getElementById('roomInfo').innerText = 'Room: ' + code;
                 hostConn.send({ type: 'join', token: myToken, name: myName });
                 switchView('game');
             });
-            hostConn.on('data', data => { if (data.type === 'sync') { gameState = data.state; updateUI(); } });
+            hostConn.on('data', data => { 
+                if (data.type === 'sync') { 
+                    gameState = data.state; 
+                    // 패치: 클라이언트 자신의 정확한 최신 ID 갱신 (재접속 꼬임 방지)
+                    let me = gameState.players.find(p => p.token === myToken);
+                    if(me) myId = me.id; 
+                    updateUI(); 
+                } 
+            });
             hostConn.on('close', () => { showStatus("Host disconnected."); switchView('lobby'); });
         });
     }
 
-    // --- Host Logic (Handling Connections & Actions) ---
     function handleClientMessage(conn, data) {
         if (!isHost) return;
         let clientId = conn.peer;
 
         if (data.type === 'join') {
-            // 연결 배열에 추가 (기존에 있으면 덮어쓰기)
             let connIdx = connections.findIndex(c => c.peer === clientId);
             if(connIdx === -1) connections.push(conn); else connections[connIdx] = conn;
 
-            // 로컬 스토리지 토큰으로 재접속 확인
             let existingPlayer = gameState.players.find(p => p.token === data.token);
-            
             if (existingPlayer && !existingPlayer.hasLeft) {
-                // 재접속 성공
-                existingPlayer.id = clientId; 
-                existingPlayer.name = data.name; // 닉네임 업데이트
+                existingPlayer.id = clientId; // 재접속 시 ID 갱신
+                existingPlayer.name = data.name; 
                 existingPlayer.connected = true;
-                // 끊겼을 때 대기중이었으면 대기 해제 시도
                 if(gameState.phase === 'waiting' || gameState.phase === 'showdown') existingPlayer.isWaiting = false;
             } else {
-                // 완전 신규 참가
                 let isWait = (gameState.phase !== 'waiting' && gameState.phase !== 'showdown');
                 gameState.players.push({ id: clientId, token: data.token, name: data.name, chips: gameState.startingChips, bet: 0, folded: false, isWaiting: isWait, acted: false, connected: true, hasLeft: false, cards: [] });
             }
@@ -282,10 +313,7 @@
         }
         else if (data.type === 'leave') {
             let p = gameState.players.find(x => x.id === clientId);
-            if(p) { 
-                p.hasLeft = true; p.folded = true; p.isWaiting = true; p.chips = 0; 
-                checkPhaseEnd(); broadcastState(); 
-            }
+            if(p) { p.hasLeft = true; p.folded = true; p.isWaiting = true; p.chips = 0; checkPhaseEnd(); broadcastState(); }
         }
     }
 
@@ -294,17 +322,24 @@
         if(p) { p.connected = false; broadcastState(); }
     }
 
+    // 🔥 패치 2: 타인 카드 완벽 은폐 (서버 단에서 데이터를 'hidden'으로 덮어씌워서 전송)
     function broadcastState() {
         if (!isHost) return;
-        // 남은 플레이어에게만 전송
         connections.forEach(conn => {
             let p = gameState.players.find(x => x.id === conn.peer);
             if(p && p.connected && !p.hasLeft) {
                 let hiddenState = JSON.parse(JSON.stringify(gameState));
+                
+                // 전송 전 물리적 카드 마스킹
+                hiddenState.players.forEach(hp => {
+                    if (hp.id !== conn.peer && hiddenState.phase !== 'showdown') {
+                        hp.cards = hp.cards.length > 0 ? ['hidden', 'hidden'] : [];
+                    }
+                });
                 conn.send({ type: 'sync', state: hiddenState });
             }
         });
-        updateUI(); // 방장 화면 업데이트
+        updateUI(); // 방장 본인 화면도 갱신
     }
 
     function startHostLoop() {
@@ -313,7 +348,7 @@
             if(gameState.phase !== 'waiting' && gameState.phase !== 'showdown') {
                 if(gameState.turnEndTime > 0 && Date.now() >= gameState.turnEndTime) {
                     let currPlayer = gameState.players[gameState.turnIndex];
-                    if(currPlayer) processAction(currPlayer.id, 'fold', 0); // 타임아웃 자동 폴드
+                    if(currPlayer) processAction(currPlayer.id, 'fold', 0); 
                 }
             }
         }, 1000);
@@ -332,7 +367,6 @@
         let activePlayers = [];
         gameState.players.forEach(p => {
             p.bet = 0; p.acted = false; 
-            // 연결 끊기거나 떠난 유저는 제외
             p.folded = (p.chips <= 0 || p.hasLeft); 
             p.isWaiting = p.hasLeft; 
             if(!p.folded) {
@@ -346,7 +380,6 @@
             broadcastState(); return;
         }
 
-        // 유효한 플레이어 찾아서 딜러 넘기기
         do { gameState.dealerIndex = (gameState.dealerIndex + 1) % gameState.players.length; } 
         while (gameState.players[gameState.dealerIndex].folded || gameState.players[gameState.dealerIndex].hasLeft);
 
@@ -401,7 +434,6 @@
             gameState.turnIndex = (gameState.turnIndex + 1) % gameState.players.length;
             let p = gameState.players[gameState.turnIndex];
             if(!p.folded && !p.isWaiting && !p.hasLeft && p.chips > 0) {
-                // 접속 끊긴 사람 차례면 바로 죽임 (또는 15초 대기 시켜도 됨. 일단 진행을 위해 바로 죽이는 옵션 고려. 여기선 15초 기다려줌)
                 gameState.turnEndTime = Date.now() + 15000;
                 broadcastState();
                 return;
@@ -430,16 +462,17 @@
 
     const valMap = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14};
     function evaluateHand(cards) {
-        if(cards.length < 5) return {score: 0};
-        let values = cards.map(c => valMap[c.value]).sort((a,b)=>b-a);
+        if(cards.length < 5) return {score: 0, name: "Fold"};
+        let vals = cards.map(c => valMap[c.value]).sort((a,b)=>b-a);
         let suits = cards.map(c => c.suit);
-        let counts = {}; values.forEach(v => counts[v] = (counts[v]||0)+1);
+        
+        let counts = {}; vals.forEach(v => counts[v] = (counts[v]||0)+1);
         let suitCounts = {}; suits.forEach(s => suitCounts[s] = (suitCounts[s]||0)+1);
         
         let flushSuit = Object.keys(suitCounts).find(s => suitCounts[s] >= 5);
         let isFlush = !!flushSuit;
         
-        let uniqueVals = [...new Set(values)];
+        let uniqueVals = [...new Set(vals)];
         let isStraight = false; let straightHigh = 0;
         for(let i=0; i<=uniqueVals.length-5; i++) {
             if(uniqueVals[i] - uniqueVals[i+4] === 4) { isStraight = true; straightHigh = uniqueVals[i]; break; }
@@ -448,21 +481,24 @@
             isStraight = true; straightHigh = 5;
         }
 
-        let pairs = Object.keys(counts).filter(k=>counts[k]===2).map(Number).sort((a,b)=>b-a);
-        let trips = Object.keys(counts).filter(k=>counts[k]===3).map(Number).sort((a,b)=>b-a);
         let quads = Object.keys(counts).filter(k=>counts[k]===4).map(Number).sort((a,b)=>b-a);
+        let trips = Object.keys(counts).filter(k=>counts[k]===3).map(Number).sort((a,b)=>b-a);
+        let pairs = Object.keys(counts).filter(k=>counts[k]===2).map(Number).sort((a,b)=>b-a);
 
-        let rank = 0; let name = "High Card"; let scoreVal = values[0];
-        if(isFlush && isStraight) { rank = 8; name = "Straight Flush"; scoreVal = straightHigh; }
-        else if(quads.length > 0) { rank = 7; name = "Four of a Kind"; scoreVal = quads[0]; }
-        else if(trips.length > 0 && pairs.length > 0) { rank = 6; name = "Full House"; scoreVal = trips[0]*100 + pairs[0]; }
-        else if(isFlush) { rank = 5; name = "Flush"; scoreVal = values.filter((v,i)=>suits[i]===flushSuit)[0]; }
-        else if(isStraight) { rank = 4; name = "Straight"; scoreVal = straightHigh; }
-        else if(trips.length > 0) { rank = 3; name = "Three of a Kind"; scoreVal = trips[0]; }
-        else if(pairs.length >= 2) { rank = 2; name = "Two Pair"; scoreVal = pairs[0]*100 + pairs[1]; }
-        else if(pairs.length === 1) { rank = 1; name = "Pair"; scoreVal = pairs[0]; }
+        let rank = 0; let name = "High Card"; let top5 = [];
+        
+        if(isFlush && isStraight) { rank = 8; name = "Straight Flush"; top5 = [straightHigh]; }
+        else if(quads.length > 0) { rank = 7; name = "Four of a Kind"; let k = vals.filter(v=>v!==quads[0]); top5 = [quads[0], k[0]]; }
+        else if(trips.length > 0 && pairs.length > 0) { rank = 6; name = "Full House"; top5 = [trips[0], pairs[0]]; }
+        else if(isFlush) { rank = 5; name = "Flush"; top5 = vals.filter((v,i)=>suits[i]===flushSuit).slice(0,5); }
+        else if(isStraight) { rank = 4; name = "Straight"; top5 = [straightHigh]; }
+        else if(trips.length > 0) { rank = 3; name = "Three of a Kind"; let k = vals.filter(v=>v!==trips[0]); top5 = [trips[0], k[0], k[1]]; }
+        else if(pairs.length >= 2) { rank = 2; name = "Two Pair"; let k = vals.filter(v=>v!==pairs[0]&&v!==pairs[1]); top5 = [pairs[0], pairs[1], k[0]]; }
+        else if(pairs.length === 1) { rank = 1; name = "Pair"; let k = vals.filter(v=>v!==pairs[0]); top5 = [pairs[0], k[0], k[1], k[2]]; }
+        else { top5 = vals.slice(0,5); }
 
-        return { score: (rank * 1000000) + scoreVal, name: name };
+        let score = rank * 759375 + (top5[0]||0)*50625 + (top5[1]||0)*3375 + (top5[2]||0)*225 + (top5[3]||0)*15 + (top5[4]||0);
+        return { score: score, name: name };
     }
 
     function handleShowdown(isFoldWin) {
@@ -492,7 +528,6 @@
         setTimeout(() => { if(isHost) hostStartGame(); }, 10000);
     }
 
-    // --- Client Functions ---
     function editName() {
         let newName = prompt("Change Nickname:", myName);
         if (newName && newName.trim() !== '') {
@@ -500,9 +535,7 @@
             if (isHost) {
                 let p = gameState.players.find(x => x.id === myId);
                 if(p) { p.name = myName; broadcastState(); }
-            } else {
-                hostConn.send({ type: 'rename', name: myName });
-            }
+            } else { hostConn.send({ type: 'rename', name: myName }); }
         }
     }
 
@@ -513,8 +546,8 @@
                 let p = gameState.players.find(x => x.id === myId);
                 if(p) { p.hasLeft = true; p.folded = true; p.chips = 0; checkPhaseEnd(); broadcastState(); }
             }
-            localStorage.removeItem('pkr_token'); // 기록 지우기
-            window.location.reload(); // 초기화
+            localStorage.removeItem('pkr_token'); 
+            window.location.reload(); 
         }
     }
 
@@ -558,17 +591,15 @@
         const playersDiv = document.getElementById('playersList');
         playersDiv.innerHTML = '';
         
-        let validPlayers = gameState.players.filter(p => !p.hasLeft); // 나간 유저 렌더링 제외
+        let validPlayers = gameState.players.filter(p => !p.hasLeft); 
         let total = validPlayers.length;
-        let myIndex = validPlayers.findIndex(p => p.token === myToken);
+        let myIndex = validPlayers.findIndex(p => p.id === myId); // 🔥 패치 3: UI 렌더링 시 token이 아닌 고유 id로 본인 대조
         if(myIndex === -1) myIndex = 0;
-        let myData = validPlayers[myIndex] || null;
+        let myData = validPlayers.find(p => p.id === myId) || null;
 
-        // 칩 리더 찾기 (최대 금액)
         let maxChips = Math.max(...validPlayers.map(p => p.chips));
 
         validPlayers.forEach((p, index) => {
-            // 돈 상승 애니메이션 체크
             if(prevChipsState[p.id] !== undefined && p.chips > prevChipsState[p.id]) {
                 setTimeout(() => createFloatingText(p.id, `+ ${p.chips - prevChipsState[p.id]}`), 100);
             }
@@ -576,14 +607,17 @@
 
             let shiftedIndex = (index - myIndex + total) % total;
             let angle = (shiftedIndex / total) * Math.PI * 2 + (Math.PI / 2);
-            let radiusX = 45; let radiusY = 35;
+            let isMobile = window.innerWidth <= 600;
+            let radiusX = isMobile ? 44 : 45; 
+            let radiusY = isMobile ? 40 : 35; 
             let left = 50 + radiusX * Math.cos(angle);
             let top = 50 + radiusY * Math.sin(angle);
 
+            // 방장 화면이어도 본인 카드가 아니면 무조건 가리기 강제
             let displayCards = '';
             if(p.cards && p.cards.length > 0) {
                 displayCards = p.cards.map(c => {
-                    let isMyCard = (p.token === myToken);
+                    let isMyCard = (p.id === myId);
                     let isShowdown = (gameState.phase === 'showdown');
                     let actualCard = (isMyCard || isShowdown) ? c : 'hidden';
                     let anim = (isShowdown && actualCard !== 'hidden') ? 'flip-in' : '';
@@ -616,28 +650,24 @@
             `;
         });
 
-        // 내 패널 제어
         const actionPanel = document.getElementById('actionPanel');
         const raiseRow = document.getElementById('raiseRow');
         const btnLeave = document.getElementById('btnLeave');
         const btnCall = document.getElementById('btnCall');
         
         let currentTurnPlayer = gameState.players[gameState.turnIndex];
-        let isMyTurn = (currentTurnPlayer && currentTurnPlayer.token === myToken);
-        let amIActive = (myData && !myData.folded && !myData.isWaiting && myData.chips > 0);
-        let isPlayingPhase = (gameState.phase !== 'showdown' && gameState.phase !== 'waiting');
+        
+        // 🔥 패치 3: 버튼 표시 조건 논리를 가장 완벽하게 수정
+        let isMyTurn = (currentTurnPlayer && currentTurnPlayer.id === myId);
+        let amIActive = (myData && !myData.folded && !myData.isWaiting && !myData.hasLeft && myData.chips > 0);
+        let isPlayingPhase = (gameState.phase !== 'waiting' && gameState.phase !== 'showdown');
 
-        // 파산(0원) 시 나가기 버튼 활성화
         if(myData && myData.chips === 0 && (!isPlayingPhase || myData.folded)) {
-            actionPanel.style.display = 'flex';
-            raiseRow.style.display = 'none';
-            btnCall.style.display = 'none';
-            btnLeave.style.display = 'block';
+            actionPanel.style.display = 'flex'; raiseRow.style.display = 'none';
+            btnCall.style.display = 'none'; btnLeave.style.display = 'block';
         } else if(isMyTurn && amIActive && isPlayingPhase) {
-            actionPanel.style.display = 'flex';
-            raiseRow.style.display = 'flex';
-            btnCall.style.display = 'block';
-            btnLeave.style.display = 'none';
+            actionPanel.style.display = 'flex'; raiseRow.style.display = 'flex';
+            btnCall.style.display = 'block'; btnLeave.style.display = 'none';
             
             const callAmount = gameState.currentBet - myData.bet;
             if(callAmount > 0) { btnCall.innerText = `CALL ${callAmount}`; btnCall.style.background = '#dc3545'; } 
@@ -646,7 +676,6 @@
             actionPanel.style.display = 'none';
         }
 
-        // 로컬 타이머 업데이트 루프
         if(!localTimerInterval) {
             localTimerInterval = setInterval(() => {
                 if(gameState.phase === 'showdown') {
@@ -670,7 +699,7 @@
     }
 
     function setRaiseVal(fraction) {
-        let p = gameState.players.find(x => x.token === myToken);
+        let p = gameState.players.find(x => x.id === myId);
         if(!p) return;
         let val = Math.floor(p.chips * fraction);
         if(val <= 0) val = p.chips;
