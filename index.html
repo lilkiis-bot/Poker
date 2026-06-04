@@ -244,29 +244,47 @@
         .player-chips { font-size: 12px; color: #ddd; font-weight: 900; margin-top: 2px; }
         .player-timer { font-size: 10px; color: #c04040; font-weight: 700; margin-top: 1px; min-height: 12px; }
         /* ===================== CHIP VISUALS ===================== */
-        .chip-stack {
-            display: inline-flex; align-items: center; gap: 2px;
-            justify-content: center;
+        /* 칩 스택: 세로로 쌓인 칩들 */
+        .chip-stack-wrap {
+            display: flex; align-items: flex-end; gap: 4px;
+            justify-content: center; flex-wrap: wrap;
         }
-        .chip-amount {
-            font-size: 11px; font-weight: 900; color: #ddd; letter-spacing: 0.3px;
-            vertical-align: middle;
+        .chip-col {
+            display: flex; flex-direction: column-reverse;
+            align-items: center; gap: -2px;
         }
-        .player.is-me .chip-amount { font-size: 13px; color: var(--gold-light); }
-
-        /* 베팅 칩 (플레이어 위) */
-        .player-bet {
-            position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
-            display: none; z-index: 5; align-items: center; gap: 3px;
-            background: rgba(0,0,0,0.78); padding: 2px 6px;
-            border-radius: 8px; border: 1px solid rgba(201,169,74,0.35);
+        .chip-col .chip-svg { margin-top: -5px; }
+        .chip-col .chip-svg:first-child { margin-top: 0; }
+        .chip-total {
+            font-size: 11px; font-weight: 900; color: #ddd;
+            text-align: center; margin-top: 2px; letter-spacing: 0px;
             white-space: nowrap;
         }
+        .player.is-me .chip-total { font-size: 13px; color: var(--gold-light); }
+
+        /* 베팅 칩 */
+        .player-bet {
+            position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+            display: none; z-index: 5; flex-direction: column; align-items: center; gap: 1px;
+        }
         .has-bet .player-bet { display: flex; }
-        .bet-label { font-size: 10px; font-weight: 900; color: var(--gold-light); }
+        .bet-label { font-size: 10px; font-weight: 900; color: var(--gold-light);
+            background: rgba(0,0,0,0.8); padding: 1px 5px; border-radius: 4px;
+            border: 1px solid rgba(201,169,74,0.4); white-space: nowrap; }
 
         /* 팟 */
-        .pot-chips { display: flex; align-items: center; gap: 4px; justify-content: center; margin-bottom: 3px; }
+        .pot-chips { display: flex; align-items: flex-end; gap: 5px; justify-content: center; margin-bottom: 4px; }
+
+        /* 칩 이동 애니메이션 */
+        .chip-fly {
+            position: fixed; z-index: 999; pointer-events: none;
+            animation: chipFly 0.7s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        @keyframes chipFly {
+            0%   { transform: translate(0,0) scale(1); opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0.5); opacity: 0; }
+        }
         .status-mask {
             position: absolute; inset: 0; background: rgba(0,0,0,0.82);
             border-radius: 6px; display: none; align-items: center;
@@ -346,72 +364,62 @@
             border-radius: 3px;
         }
 
-        /* 앞면 */
+        /* ── 앞면: 실제 트럼프 카드 레이아웃 ── */
         .card-front-face {
             width: 100%; height: 100%;
             border-radius: 7px;
-            background: #fafaf8;
-            border: 1.5px solid #d0cfc8;
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            padding: 3px 4px;
-            font-family: Georgia, 'Times New Roman', serif;
-            font-weight: 700;
+            background: #ffffff;
+            border: 1.5px solid #ccc;
+            display: flex; flex-direction: column;
+            padding: 2px 3px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 900;
             position: relative;
             overflow: hidden;
         }
-        /* 앞면 미묘한 내부 그림자 */
-        .card-front-face::before {
-            content: '';
-            position: absolute; inset: 0;
-            border-radius: 6px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
-            pointer-events: none;
+        .card-front-face::after {
+            content: ''; position: absolute; inset: 0; border-radius: 6px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); pointer-events: none;
         }
-        .card-front-face.red   { color: #c0181a; }
+        .card-front-face.red   { color: #d40000; }
         .card-front-face.black { color: #111; }
 
-        /* 좌상단: 숫자 + 수트 */
+        /* 코너 인덱스 */
         .card-corner-tl {
-            display: flex; flex-direction: column;
-            align-items: flex-start;
-            line-height: 1;
-            font-size: 14px;
+            display: flex; flex-direction: column; align-items: flex-start;
+            line-height: 1; flex-shrink: 0;
         }
-        .card-corner-tl .cv { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; }
-        .card-corner-tl .cs { font-size: 11px; margin-top: -1px; }
-
-        /* 중앙 큰 수트 (숫자패) */
-        .card-suit-center {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-            line-height: 1;
-        }
-
-        /* 중앙 SVG 그림 (J/Q/K/A) */
-        .card-face-art {
-            display: flex; align-items: center; justify-content: center;
-            flex: 1;
-            padding: 1px;
-        }
-        .card-face-art svg {
-            width: 100%; height: 100%;
-            max-width: 38px; max-height: 48px;
-        }
-        /* 그림패는 grid 대신 flex로 */
-        .card-front-face.face-card {
-            display: flex; flex-direction: column;
-        }
-
-        /* 우하단: 숫자 + 수트 (180도 회전) */
         .card-corner-br {
-            display: flex; flex-direction: column;
-            align-items: flex-end;
-            transform: rotate(180deg);
-            line-height: 1;
+            display: flex; flex-direction: column; align-items: flex-start;
+            line-height: 1; transform: rotate(180deg); flex-shrink: 0;
         }
-        .card-corner-br .cv { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; }
-        .card-corner-br .cs { font-size: 11px; margin-top: -1px; }
+        .card-corner-tl .cv, .card-corner-br .cv {
+            font-size: 13px; font-weight: 900; line-height: 1;
+        }
+        .card-corner-tl .cs, .card-corner-br .cs {
+            font-size: 10px; line-height: 1; margin-top: -1px;
+        }
+
+        /* 수트 핍 그리드 (숫자 카드) */
+        .card-pips {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: space-around; align-items: stretch;
+            padding: 1px 4px;
+        }
+        .pip-row {
+            display: flex; justify-content: space-around; align-items: center;
+        }
+        .pip { font-size: 10px; line-height: 1; }
+        .pip.inv { transform: rotate(180deg); display: inline-block; }
+
+        /* 그림패 중앙 */
+        .card-face-center {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+        }
+        .face-letter {
+            font-size: 20px; font-weight: 900; font-style: italic;
+            font-family: Georgia, serif; line-height: 1;
+        }
 
         /* 딜 애니메이션 */
         .deal-in { animation: dealFly 0.3s ease-out; }
@@ -520,9 +528,11 @@
             .slider-val { font-size: 13px; }
             .btn-confirm-raise, .btn-cancel-raise { padding: 10px; font-size: 12px; }
             #hostStartBtn { font-size: 15px; padding: 13px 28px; }
-            .card-corner-tl .cv, .card-corner-br .cv { font-size: 12px; }
-            .card-corner-tl .cs, .card-corner-br .cs { font-size: 10px; }
-            .card-suit-center { font-size: 22px; }
+            .card-corner-tl .cv, .card-corner-br .cv { font-size: 11px; }
+            .card-corner-tl .cs, .card-corner-br .cs { font-size: 9px; }
+            .pip { font-size: 9px; }
+            .card-face-center { font-size: 20px; }
+            .face-letter { font-size: 17px; }
         }
     </style>
 </head>
@@ -973,6 +983,13 @@
         }
         gameState.turnEndTime = 0; gameState.nextGameTime = Date.now() + 15000;
         broadcastState();
+        // 칩 이동 애니메이션 (showdown 직후)
+        setTimeout(() => {
+            if (gameState.phase === 'showdown') {
+                const wIds = gameState.players.filter(p => p.wonAmount > 0);
+                wIds.forEach(w => animateChipsToWinner(w.id, w.wonAmount));
+            }
+        }, 200);
         setTimeout(() => { if (isHost) hostStartGame(); }, 15000);
     }
 
@@ -1044,184 +1061,155 @@
 
     // ===================== CHIP SVG =====================
     // 금액에 따른 칩 색상 (포커 테이블 표준 배색)
+    // ===================== CHIP SYSTEM =====================
+    // 포커 표준 칩 단위 (칩 1개 = 해당 min 액면)
     const CHIP_TIERS = [
-        { min: 5000, color: '#2c2c2c', stripe: '#888', label: '5K' },  // 검정
-        { min: 1000, color: '#1a3a6e', stripe: '#6ab', label: '1K' },  // 파랑
-        { min:  500, color: '#6b2020', stripe: '#e88', label: '500' }, // 빨강
-        { min:  100, color: '#1a5c1a', stripe: '#6d6', label: '100' }, // 초록
-        { min:   50, color: '#6b4010', stripe: '#da8', label: '50'  }, // 주황
-        { min:   25, color: '#4a1a6e', stripe: '#a6d', label: '25'  }, // 보라
-        { min:    5, color: '#5a5a5a', stripe: '#bbb', label: '5'   }, // 회색
-        { min:    1, color: '#c9a94a', stripe: '#fff', label: '1'   }, // 금색
+        { val: 5000, color: '#1a1a1a', rim: '#aaa',    label: '5K'  },
+        { val: 1000, color: '#1a3575', rim: '#7aacf0',  label: '1K'  },
+        { val:  500, color: '#8b0000', rim: '#f08080',  label: '500' },
+        { val:  100, color: '#145214', rim: '#66cc66',  label: '100' },
+        { val:   25, color: '#6a0dad', rim: '#cc99ff',  label: '25'  },
+        { val:    5, color: '#555',    rim: '#ccc',      label: '5'   },
+        { val:    1, color: '#b8860b', rim: '#ffe066',  label: '1'   },
     ];
 
-    // 단일 칩 SVG (size: 픽셀)
-    function chipSVG(color, stripe, size = 16) {
-        const r = size / 2;
-        const ir = r * 0.72; // 내부 원 반지름
+    // 단일 칩 SVG — 테두리 줄무늬가 있는 포커칩 모양
+    function chipSVG(tier, size) {
+        const r = size / 2, s = tier.rim, c = tier.color;
+        const ir = r * 0.75;
+        // 8개 줄무늬 점
+        const dots = [];
+        for (let i = 0; i < 8; i++) {
+            const a = (i / 8) * Math.PI * 2;
+            const dr = r * 0.88;
+            const x = r + dr * Math.cos(a);
+            const y = r + dr * Math.sin(a);
+            dots.push(`<rect x="${x-r*0.12}" y="${y-r*0.04}" width="${r*0.24}" height="${r*0.08}"
+                fill="${s}" rx="1" transform="rotate(${i*45} ${x} ${y})"/>`);
+        }
         return `<svg class="chip-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="${r}" cy="${r}" r="${r - 0.5}" fill="${color}" stroke="${stripe}" stroke-width="1.2"/>
-  <circle cx="${r}" cy="${r}" r="${ir}" fill="none" stroke="${stripe}" stroke-width="1" stroke-dasharray="3 2"/>
-  <circle cx="${r}" cy="${r}" r="${r * 0.38}" fill="${stripe}" opacity="0.55"/>
+  <circle cx="${r}" cy="${r}" r="${r-0.5}" fill="${c}" stroke="${s}" stroke-width="1.5"/>
+  ${dots.join('')}
+  <circle cx="${r}" cy="${r}" r="${ir}" fill="none" stroke="${s}" stroke-width="1" opacity="0.6"/>
+  <circle cx="${r}" cy="${r}" r="${r*0.45}" fill="${s}" opacity="0.25"/>
 </svg>`;
     }
 
-    // 금액을 칩 스택 HTML로 변환
-    // maxChips: 최대 표시 칩 개수, size: 칩 크기
-    function chipsHTML(amount, maxChips = 4, size = 14) {
-        if (!amount || amount <= 0) return `<span class="chip-amount">0</span>`;
-        // 가장 높은 단위부터 분해
-        let remaining = amount;
-        let chips = [];
-        for (const tier of CHIP_TIERS) {
-            const count = Math.floor(remaining / tier.min);
-            if (count > 0) {
-                chips.push({ ...tier, count });
-                remaining -= count * tier.min;
-            }
-            if (remaining <= 0) break;
+    // 금액 → 칩 분해 [{tier, count}, ...]
+    function breakChips(amount) {
+        let rem = Math.round(amount), result = [];
+        for (const t of CHIP_TIERS) {
+            const n = Math.floor(rem / t.val);
+            if (n > 0) { result.push({ tier: t, count: n }); rem -= n * t.val; }
+            if (rem <= 0) break;
         }
-        // 표시할 칩들 (최대 maxChips개 종류, 실제 개수는 1~3개씩)
-        let svgs = '';
-        let shown = 0;
-        for (const chip of chips) {
-            if (shown >= maxChips) break;
-            // 같은 색 칩 여러 개는 겹쳐서 표현 (최대 3개)
-            const repeat = Math.min(chip.count, 3, maxChips - shown);
-            for (let i = 0; i < repeat; i++) {
-                svgs += chipSVG(chip.color, chip.stripe, size);
-            }
-            shown += repeat;
-        }
-        // 숫자 표시 (1000 이상은 K 단위)
-        const label = amount >= 1000 ? (amount % 1000 === 0 ? (amount/1000) + 'K' : (amount/1000).toFixed(1).replace(/\.0$/,'') + 'K') : String(amount);
-        return `<span class="chip-stack">${svgs}</span><span class="chip-amount">${label}</span>`;
+        return result;
     }
 
-    // 팟 전용 (좀 더 큰 칩)
+    // 칩 스택 HTML — 세로로 쌓인 칩 컬럼들 + 정확한 숫자
+    function chipsHTML(amount, maxCols = 4, size = 14) {
+        if (!amount || amount <= 0)
+            return `<span class="chip-total">0</span>`;
+        const cols = breakChips(amount);
+        let svgs = '';
+        cols.slice(0, maxCols).forEach(({ tier, count }) => {
+            const stack = Math.min(count, 5); // 한 컬럼에 최대 5개 쌓기
+            let col = '';
+            for (let i = 0; i < stack; i++)
+                col += `<div style="margin-top:${i===0?0:-Math.floor(size*0.55)}px">${chipSVG(tier, size)}</div>`;
+            svgs += `<div style="display:flex;flex-direction:column-reverse;align-items:center">${col}</div>`;
+        });
+        return `<div style="display:flex;align-items:flex-end;gap:3px;justify-content:center">${svgs}</div>`
+             + `<span class="chip-total">${amount.toLocaleString()}</span>`;
+    }
+
+    // 팟 칩 HTML (더 큰 사이즈)
     function potChipsHTML(amount) {
-        if (!amount || amount <= 0) return `<span class="chip-amount" style="color:var(--gold-light)">0</span>`;
-        let remaining = amount;
-        let chips = [];
-        for (const tier of CHIP_TIERS) {
-            const count = Math.floor(remaining / tier.min);
-            if (count > 0) { chips.push({ ...tier, count }); remaining -= count * tier.min; }
-            if (remaining <= 0) break;
-        }
+        if (!amount || amount <= 0)
+            return `<span style="font-weight:900;color:var(--gold-light);font-size:13px">0</span>`;
+        const cols = breakChips(amount);
+        const size = 18;
         let svgs = '';
-        let shown = 0;
-        for (const chip of chips) {
-            if (shown >= 5) break;
-            const repeat = Math.min(chip.count, 3, 5 - shown);
-            for (let i = 0; i < repeat; i++) svgs += chipSVG(chip.color, chip.stripe, 18);
-            shown += repeat;
-        }
-        const label = amount >= 1000 ? (amount % 1000 === 0 ? (amount/1000)+'K' : (amount/1000).toFixed(1).replace(/\.0$/,'')+'K') : String(amount);
-        return `<div class="pot-chips">${svgs}</div><span style="font-weight:900;color:var(--gold-light);font-size:13px">${label}</span>`;
+        cols.slice(0, 5).forEach(({ tier, count }) => {
+            const stack = Math.min(count, 6);
+            let col = '';
+            for (let i = 0; i < stack; i++)
+                col += `<div style="margin-top:${i===0?0:-Math.floor(size*0.55)}px">${chipSVG(tier, size)}</div>`;
+            svgs += `<div style="display:flex;flex-direction:column-reverse;align-items:center">${col}</div>`;
+        });
+        return `<div class="pot-chips">${svgs}</div>`
+             + `<span style="font-weight:900;color:var(--gold-light);font-size:13px">${amount.toLocaleString()}</span>`;
     }
 
-    // 표시용 숫자/문자 변환 (T → 10)
+    // 칩 이동 애니메이션 (팟 → 위너)
+    function animateChipsToWinner(winnerId, amount) {
+        const potEl  = document.getElementById('potInfo');
+        const winEl  = document.getElementById('player-' + winnerId);
+        if (!potEl || !winEl) return;
+        const pr = potEl.getBoundingClientRect();
+        const wr = winEl.getBoundingClientRect();
+        const tx = (wr.left + wr.width/2)  - (pr.left + pr.width/2);
+        const ty = (wr.top  + wr.height/2) - (pr.top  + pr.height/2);
+        const cols = breakChips(Math.min(amount, 5000)); // 대표 칩만
+        const n = Math.min(cols.length, 5);
+        for (let i = 0; i < n; i++) {
+            const chip = document.createElement('div');
+            chip.className = 'chip-fly';
+            chip.style.cssText = `left:${pr.left + pr.width/2 - 9}px;top:${pr.top + pr.height/2 - 9}px;--tx:${tx}px;--ty:${ty}px`;
+            chip.innerHTML = chipSVG(cols[i].tier, 18);
+            chip.style.animationDelay = (i * 0.06) + 's';
+            document.body.appendChild(chip);
+            chip.addEventListener('animationend', () => chip.remove());
+        }
+    }
+
+    // ===================== CARD SYSTEM =====================
     function displayVal(v) { return v === 'T' ? '10' : v; }
 
-    // J/Q/K/A 중앙 SVG 그림 (수트 색상 적용)
-    function faceArt(value, suit) {
-        const isRed = (suit === '♥' || suit === '♦');
-        const c  = isRed ? '#c0181a' : '#111';   // 주 색상
-        const c2 = isRed ? '#e05050' : '#444';   // 보조 색상
+    // 숫자 카드 수트 핍 배치 패턴 (포커 카드 표준)
+    // 각 패턴: [행별 [위치(0=없음 1=정방향 -1=역방향)]]
+    // pip-row 3개: top / mid / bottom
+    const PIP_PATTERNS = {
+        '2':  [[1],[],[1,'-']],
+        '3':  [[1],[1],[1,'-']],
+        '4':  [[1,1],[],[1,1,'-']],
+        '5':  [[1,1],[1],[1,1,'-']],
+        '6':  [[1,1],[1,1],[1,1,'-']],
+        '7':  [[1,1],[1,1,'m'],[1,1,'-']],   // 'm' = 중간 위
+        '8':  [[1,1],[1,1,'m','b'],[1,1,'-']], // 'b' = 중간 아래
+        '9':  [[1,1,1],[1],[1,1,1,'-']],
+        '10': [[1,1,1],[1,'m',1,'-'],[1,1,1,'-']],
+    };
 
-        if (value === 'J') {
-            // Jack: 깃털 달린 모자 + 얼굴 실루엣
-            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">
-  <!-- 모자 챙 -->
-  <ellipse cx="20" cy="16" rx="14" ry="4" fill="${c}" opacity="0.9"/>
-  <!-- 모자 본체 -->
-  <rect x="11" y="6" width="18" height="12" rx="3" fill="${c}"/>
-  <!-- 깃털 -->
-  <path d="M28 6 Q38 0 36 10 Q30 8 28 6Z" fill="${c2}"/>
-  <path d="M28 8 Q36 4 35 12 Q30 10 28 8Z" fill="${c}" opacity="0.5"/>
-  <!-- 얼굴 -->
-  <ellipse cx="20" cy="28" rx="8" ry="9" fill="#f5deb3"/>
-  <ellipse cx="20" cy="28" rx="8" ry="9" fill="none" stroke="${c}" stroke-width="1"/>
-  <!-- 눈 -->
-  <circle cx="17" cy="26" r="1.3" fill="${c}"/>
-  <circle cx="23" cy="26" r="1.3" fill="${c}"/>
-  <!-- 콧수염 -->
-  <path d="M16 30 Q18 32 20 30 Q22 32 24 30" stroke="${c}" stroke-width="1" fill="none"/>
-  <!-- 칼라 -->
-  <path d="M13 37 Q20 34 27 37 L25 46 Q20 43 15 46Z" fill="${c}" opacity="0.8"/>
-  <path d="M20 34 L20 44" stroke="${c2}" stroke-width="1"/>
-</svg>`;
-        }
-
-        if (value === 'Q') {
-            // Queen: 왕관 + 얼굴
-            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">
-  <!-- 왕관 -->
-  <polygon points="6,18 10,6 20,14 30,6 34,18" fill="${c}"/>
-  <circle cx="6"  cy="18" r="2.5" fill="${c2}"/>
-  <circle cx="20" cy="14" r="2.5" fill="${c2}"/>
-  <circle cx="34" cy="18" r="2.5" fill="${c2}"/>
-  <rect x="6" y="17" width="28" height="5" rx="1" fill="${c}"/>
-  <!-- 얼굴 -->
-  <ellipse cx="20" cy="30" rx="8" ry="9" fill="#f5deb3"/>
-  <ellipse cx="20" cy="30" rx="8" ry="9" fill="none" stroke="${c}" stroke-width="1"/>
-  <!-- 눈 -->
-  <path d="M15.5 28 Q17 26.5 18.5 28" stroke="${c}" stroke-width="1.2" fill="none"/>
-  <path d="M21.5 28 Q23 26.5 24.5 28" stroke="${c}" stroke-width="1.2" fill="none"/>
-  <!-- 입술 -->
-  <path d="M16.5 33 Q20 36 23.5 33" stroke="${c}" stroke-width="1.2" fill="${c2}" opacity="0.6"/>
-  <!-- 목걸이 -->
-  <ellipse cx="20" cy="41" rx="6" ry="2" fill="none" stroke="${c2}" stroke-width="1.5"/>
-  <circle cx="20" cy="43" r="1.5" fill="${c2}"/>
-</svg>`;
-        }
-
-        if (value === 'K') {
-            // King: 왕관 + 얼굴 + 홀笏
-            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">
-  <!-- 왕관 (크게) -->
-  <polygon points="4,18 9,4 20,13 31,4 36,18" fill="${c}"/>
-  <circle cx="4"  cy="18" r="2.8" fill="${c2}"/>
-  <circle cx="20" cy="12" r="2.8" fill="${c2}"/>
-  <circle cx="36" cy="18" r="2.8" fill="${c2}"/>
-  <!-- 보석 -->
-  <polygon points="20,8 22,12 20,16 18,12" fill="${c2}" opacity="0.9"/>
-  <rect x="4" y="17" width="32" height="5" rx="1.5" fill="${c}"/>
-  <!-- 얼굴 -->
-  <ellipse cx="20" cy="29" rx="8.5" ry="9" fill="#f5deb3"/>
-  <ellipse cx="20" cy="29" rx="8.5" ry="9" fill="none" stroke="${c}" stroke-width="1"/>
-  <!-- 눈썹 -->
-  <path d="M15 25.5 Q17.5 24 18.5 25.5" stroke="${c}" stroke-width="1.2" fill="none"/>
-  <path d="M21.5 25.5 Q22.5 24 25 25.5" stroke="${c}" stroke-width="1.2" fill="none"/>
-  <!-- 눈 -->
-  <circle cx="17" cy="27.5" r="1.4" fill="${c}"/>
-  <circle cx="23" cy="27.5" r="1.4" fill="${c}"/>
-  <!-- 수염 -->
-  <path d="M14 32 Q17 35 20 33 Q23 35 26 32" stroke="${c}" stroke-width="1.2" fill="${c2}" opacity="0.5"/>
-  <!-- 망토 -->
-  <path d="M12 38 Q20 35 28 38 L29 50 Q20 47 11 50Z" fill="${c}" opacity="0.75"/>
-  <line x1="20" y1="35" x2="20" y2="50" stroke="${c2}" stroke-width="1.2"/>
-</svg>`;
-        }
-
-        if (value === 'A') {
-            // Ace: 큰 수트 심볼 + 장식
-            const suitPath = {
-                '♠': `<path d="M20 6 C20 6 6 20 6 28 C6 34 12 36 20 30 C28 36 34 34 34 28 C34 20 20 6 20 6Z" fill="${c}"/>
-                       <rect x="17" y="30" width="6" height="10" fill="${c}"/>
-                       <ellipse cx="20" cy="41" rx="8" ry="2.5" fill="${c}"/>`,
-                '♥': `<path d="M20 40 C20 40 6 26 6 18 C6 12 10 8 15 8 C17.5 8 20 10 20 10 C20 10 22.5 8 25 8 C30 8 34 12 34 18 C34 26 20 40 20 40Z" fill="${c}"/>`,
-                '♦': `<polygon points="20,7 33,27 20,47 7,27" fill="${c}"/>`,
-                '♣': `<circle cx="20" cy="18" r="7" fill="${c}"/>
-                       <circle cx="13" cy="28" r="7" fill="${c}"/>
-                       <circle cx="27" cy="28" r="7" fill="${c}"/>
-                       <rect x="17" y="30" width="6" height="10" fill="${c}"/>
-                       <ellipse cx="20" cy="41" rx="8" ry="2.5" fill="${c}"/>`
-            }[suit] || '';
-            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">${suitPath}</svg>`;
-        }
-
-        return null; // 숫자 카드는 null 반환 → 기존 레이아웃 사용
+    function buildPips(value, suit) {
+        // 단순하게: 숫자만큼 수트를 배치
+        const n = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10}[value];
+        if (!n) return '';
+        // 배치 레이아웃 (row별 [정방향수, 역방향수])
+        const layouts = {
+            2:  [{n:1,inv:false},{},{n:1,inv:true}],
+            3:  [{n:1},{n:1},{n:1,inv:true}],
+            4:  [{n:2},{},{n:2,inv:true}],
+            5:  [{n:2},{n:1},{n:2,inv:true}],
+            6:  [{n:2},{n:2},{n:2,inv:true}],
+            7:  [{n:2},{n:3},{n:2,inv:true}],  // 3개 중 가운데만 역방향X
+            8:  [{n:2,top:true},{n:2,mid:true},{n:2,inv:true}],
+            9:  [{n:3},{n:1},{n:3,inv:true}],
+            10: [{n:3},{n:2,mix:true},{n:3,inv:true}],
+        };
+        const lay = layouts[n];
+        if (!lay) return '';
+        let rows = '';
+        lay.forEach(row => {
+            if (!row || row.n === undefined) { rows += `<div class="pip-row"></div>`; return; }
+            let cells = '';
+            for (let i = 0; i < row.n; i++) {
+                const cls = row.inv ? ' inv' : '';
+                cells += `<span class="pip${cls}">${suit}</span>`;
+            }
+            rows += `<div class="pip-row">${cells}</div>`;
+        });
+        return `<div class="card-pips">${rows}</div>`;
     }
 
     function getCardHTML(card, isNew) {
@@ -1233,31 +1221,34 @@
             return `<div class="card-container ${dealCls}"><div class="card-back-face"></div></div>`;
         }
 
+        const dv      = displayVal(card.value);
         const colorCls = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
-        const hlCls    = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
-        const dv       = displayVal(card.value);  // T → 10
-        const art      = faceArt(card.value, card.suit); // J/Q/K/A → SVG, 숫자 → null
+        const hlCls   = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
+        const isFace  = ['J','Q','K','A'].includes(card.value);
 
-        if (art) {
-            // 그림패 (J/Q/K/A): 좌상단 값, 중앙 SVG, 우하단 값
-            return `<div class="card-container ${dealCls} ${hlCls}">
-                <div class="card-front-face ${colorCls} face-card">
-                    <div class="card-corner-tl"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
-                    <div class="card-face-art">${art}</div>
-                    <div class="card-corner-br"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
-                </div>
-            </div>`;
+        let centerHTML;
+        if (card.value === 'J') {
+            centerHTML = `<div class="card-face-center"><span class="face-letter">J</span></div>`;
+        } else if (card.value === 'Q') {
+            centerHTML = `<div class="card-face-center"><span class="face-letter">Q</span></div>`;
+        } else if (card.value === 'K') {
+            centerHTML = `<div class="card-face-center"><span class="face-letter">K</span></div>`;
+        } else if (card.value === 'A') {
+            centerHTML = `<div class="card-pips" style="justify-content:center"><div class="pip-row"><span style="font-size:22px;line-height:1">${card.suit}</span></div></div>`;
+        } else {
+            // 숫자 카드: 핍 패턴
+            centerHTML = buildPips(card.value, card.suit);
         }
 
-        // 숫자패 (A는 위에서 처리, 2~10): 좌상단 값, 중앙 큰 수트, 우하단 값
         return `<div class="card-container ${dealCls} ${hlCls}">
             <div class="card-front-face ${colorCls}">
                 <div class="card-corner-tl"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
-                <div class="card-suit-center">${card.suit}</div>
+                ${centerHTML}
                 <div class="card-corner-br"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
             </div>
         </div>`;
     }
+
 
     let localTimerInterval = null;
     let prevCommCardCount  = 0;
@@ -1364,15 +1355,15 @@
             const chipSize = isMeClass ? 15 : 13;
             const chipsHtml = chipsHTML(p.chips, 4, chipSize);
 
-            // 쇼다운 결과
+            // 쇼다운 결과 (정확한 숫자)
             let resultHtml = '';
             if (gameState.phase === 'showdown') {
                 if (p.wonAmount > 0) {
-                    resultHtml = `<div style="margin-top:2px">${chipsHTML(p.wonAmount, 3, 12)}<span class="won-text" style="display:inline;margin-left:2px">+${p.wonAmount}</span></div>`;
+                    resultHtml = `<span class="won-text">+${p.wonAmount.toLocaleString()}</span>`;
                 } else {
                     const prevC = preShowdownChips[p.id];
                     if (prevC !== undefined && prevC > p.chips) {
-                        resultHtml = `<span class="lost-text">-${prevC - p.chips}</span>`;
+                        resultHtml = `<span class="lost-text">-${(prevC - p.chips).toLocaleString()}</span>`;
                     }
                 }
             }
@@ -1492,5 +1483,5 @@
         toggleRaisePanel(false);
     }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0686f500c6f72d2',t:'MTc4MDU5MTgwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0687d26c930ea17',t:'MTc4MDU5MjM3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
