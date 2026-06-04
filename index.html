@@ -9,12 +9,13 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
         :root {
-            --bg-color: #0b0c10;
-            --table-outer: #1a1e24;
-            --table-inner: #0f4b36;
-            --accent: #45a29e;
-            --accent-gold: #ffd700;
-            --text-main: #c5c6c7;
+            /* 🔥 Dream Poker 퍼플 테마 */
+            --bg-color: #0d0914;
+            --table-outer: #1c142b;
+            --table-inner: #27183b;
+            --accent: #9b59b6;
+            --accent-gold: #f1c40f;
+            --text-main: #e0dced;
             --card-w: 52px;
             --card-h: 74px;
         }
@@ -28,19 +29,18 @@
 
         /* --- Lobby --- */
         #lobby { padding: 20px; }
-        .box { background: #111; padding: 30px; border-radius: 15px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #222; text-align: center; }
-        h1 { margin-bottom: 20px; color: var(--accent-gold); font-weight: 900; font-size: 26px; letter-spacing: 2px; }
+        .box { background: #150f1f; padding: 30px; border-radius: 15px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border: 1px solid #322147; text-align: center; }
+        h1 { margin-bottom: 20px; color: var(--accent-gold); font-weight: 900; font-size: 28px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
         .input-group { display: flex; gap: 8px; margin: 8px 0; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: none; background: #222; color: white; border-radius: 8px; font-size: 14px; text-align: center; outline: none; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: none; background: #221833; color: white; border-radius: 8px; font-size: 14px; text-align: center; outline: none; }
         input:focus { border: 1px solid var(--accent); }
         button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.1s; color: white; }
-        .btn-host { background: #198754; }
-        .btn-join { background: #0d6efd; }
-        .btn-gray { background: #444; }
+        .btn-host { background: #8e44ad; }
+        .btn-join { background: #2980b9; }
         button:active { transform: scale(0.97); }
 
-        /* --- Game Layout (Flex Fixed) --- */
+        /* --- Game Layout --- */
         #game { justify-content: space-between; position: relative; }
         
         .header { width: 100%; height: 45px; padding: 0 15px; display: flex; justify-content: space-between; z-index: 10; font-weight: bold; font-size: 13px; color: #aaa; align-items: center; background: rgba(0,0,0,0.7); border-bottom: 1px solid #222;}
@@ -48,33 +48,32 @@
         
         #winnerBanner { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: black; padding: 6px 15px; border-radius: 20px; font-weight: 900; font-size: 12px; z-index: 50; display: none; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); white-space: pre-wrap; min-width: 200px;}
 
-        /* Table Area takes remaining space */
+        /* Table Area */
         .table-container { flex: 1; position: relative; width: 100%; max-width: 900px; display: flex; align-items: center; justify-content: center; margin: 10px auto; overflow: hidden; }
         
         .poker-table {
             position: absolute; width: 92%; height: 80%; background: var(--table-inner);
             border: 12px solid var(--table-outer); border-radius: 140px;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.7), 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
         .center-area { display: flex; flex-direction: column; align-items: center; z-index: 5; }
-        .community-cards { display: flex; gap: 5px; margin-bottom: 10px; height: var(--card-h); }
-        .pot-info { background: rgba(0,0,0,0.7); padding: 6px 20px; border-radius: 20px; font-weight: 900; color: white; font-size: 14px; border: 1px solid #444; }
+        .community-cards { display: flex; gap: 5px; margin-bottom: 10px; height: var(--card-h); perspective: 1000px; }
+        .pot-info { background: rgba(0,0,0,0.8); padding: 6px 20px; border-radius: 20px; font-weight: 900; color: white; font-size: 14px; border: 1px solid #555; }
 
         /* --- Players --- */
         .player { position: absolute; transform: translate(-50%, -50%); width: 80px; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.3s ease; }
-        .player-cards { display: flex; justify-content: center; gap: -15px; margin-bottom: 5px; z-index: 2; position: relative; }
+        .player-cards { display: flex; justify-content: center; gap: -15px; margin-bottom: 5px; z-index: 2; position: relative; perspective: 1000px;}
         
         .player-info { background: #111; border: 2px solid #333; width: 100%; padding: 4px; border-radius: 8px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; z-index: 1; }
         
         .player.active-turn .player-info { border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
         .player.chip-leader .player-info { border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
-        .player.folded { opacity: 0.5; filter: grayscale(50%); }
-        .player.disconnected { filter: grayscale(100%); opacity: 0.5; }
+        .player.folded { opacity: 0.5; filter: grayscale(60%); }
+        .player.disconnected { filter: grayscale(100%); opacity: 0.4; }
         
-        .player-name { font-size: 11px; font-weight: bold; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .player.chip-leader .player-name { color: var(--accent-gold); }
+        .player-name { font-size: 11px; font-weight: bold; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 4px; padding: 2px; }
         .player-chips { font-size: 12px; color: #fff; font-weight: 900; margin-top: 2px; }
         .player-timer { font-size: 10px; color: #ff4757; font-weight: bold; margin-top: 1px; min-height: 12px; }
         
@@ -85,64 +84,54 @@
         .player.waiting .status-mask { display: flex; content: "WAITING"; }
         .allin-badge { background: #e74c3c; color: white; font-size: 9px; padding: 1px 4px; border-radius: 4px; font-weight: bold; margin-top: 2px; display: inline-block;}
         
-        /* 🔥 본인(Me) 전용 강조 (초록색 박스) */
-        .player.is-me { z-index: 20; width: 105px; }
+        /* 🔥 본인(Me) 전용 강조 */
+        .player.is-me { z-index: 20; width: 100px; }
         .player.is-me .player-info { border-width: 2px; padding: 6px; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
-        .player.is-me .player-name { background-color: #2ecc71; color: #111; border-radius: 4px; padding: 3px; font-size: 12px; }
+        .player.is-me .player-name { font-size: 13px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .player.is-me .player-chips { font-size: 14px; color: var(--accent-gold); }
-        .player.is-me .player-cards .card { transform: scale(0.9); margin: 0 -8px; }
+        .player.is-me .player-cards .card-container { transform: scale(1.1); margin: 0 -8px; }
 
-        .won-text { color: #2ecc71; font-weight: bold; font-size: 11px; display: block; }
-
-        /* Floating Text Anim */
+        .won-text { color: #2ecc71; font-weight: bold; font-size: 11px; display: block; text-shadow: 0 1px 2px #000; }
         .floating-text { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); font-size: 18px; font-weight: 900; color: #2ecc71; text-shadow: 0 2px 5px rgba(0,0,0,1); z-index: 100; pointer-events: none; animation: floatUp 2s ease-out forwards; }
         @keyframes floatUp { 0% { top: -20px; opacity: 1; transform: translateX(-50%) scale(1); } 100% { top: -80px; opacity: 0; transform: translateX(-50%) scale(1.5); } }
 
-        /* --- 100% Safe 2D Flip Card Animation --- */
-        .card { width: var(--card-w); height: var(--card-h); border-radius: 6px; font-weight: bold; position: relative; margin: 0 -10px; transform: scale(0.8); }
-        .card-inner { position: relative; width: 100%; height: 100%; border-radius: 6px; box-shadow: 2px 2px 6px rgba(0,0,0,0.5); background: white; }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; padding: 4px; }
+        /* --- 🔥 완벽한 3D Flip & Deal 카드 애니메이션 --- */
+        .card-container { width: var(--card-w); height: var(--card-h); margin: 0 -10px; transform: scale(0.8); position: relative; }
+        .card-inner { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .card-back { background: repeating-linear-gradient(45deg, #1f2833, #1f2833 5px, #0b0c10 5px, #0b0c10 10px); border: 2px solid #fff; z-index: 2; }
-        .card-front { background: white; z-index: 1; display: none; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; padding: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-weight: bold; }
+        .card-back { background: repeating-linear-gradient(45deg, #1c1126, #1c1126 5px, #0e0714 5px, #0e0714 10px); border: 2px solid #fff; transform: rotateY(0deg); }
+        .card-front { background: white; transform: rotateY(180deg); }
         .card-front.red { color: #d00000; }
         .card-front.black { color: #111; }
         
         .card-top { font-size: 12px; line-height: 1; text-align: left; }
         .card-center { font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* 상태에 따른 앞뒷면 전환 */
-        .is-revealed .card-back { display: none; }
-        .is-revealed .card-front { display: flex; }
-
-        /* 콤보 애니메이션: 날아오기(deal-in) -> 뒤집히기(flip) */
-        .deal-in { animation: dealFly 0.4s ease-out forwards; }
-        @keyframes dealFly { 0% { transform: translateY(-100px) scale(0.4); opacity: 0; } 100% { transform: translateY(0) scale(0.8); opacity: 1; } }
-
-        .do-flip .card-inner { animation: flipScale 0.4s ease-out 0.4s forwards; } /* 0.4초 대기 후 뒤집음 */
-        @keyframes flipScale {
-            0% { transform: scaleX(1); }
-            50% { transform: scaleX(0); }
-            100% { transform: scaleX(1); }
-        }
-
-        .highlight-card .card-inner { box-shadow: 0 0 15px 5px var(--accent-gold); border: 2px solid var(--accent-gold); z-index: 5; }
-
-        /* --- Fixed Controls Area --- */
-        .controls-wrapper { width: 100%; height: 170px; display: flex; justify-content: center; padding: 10px; background: #111; border-top: 1px solid #333; z-index: 20; position: relative; }
+        /* 앞면 공개 상태 */
+        .is-revealed .card-inner { transform: rotateY(180deg); }
         
-        /* 내 턴이 아닐 때 덮어씌우는 막 */
-        .controls-mask { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11,12,16, 0.85); z-index: 25; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--accent); letter-spacing: 1px; }
+        /* 딜링 (위에서 꽂히는 모션) */
+        .deal-in { animation: dealFly 0.4s ease-out forwards; }
+        @keyframes dealFly { 0% { transform: translateY(-80px) scale(0.4); opacity: 0; } 100% { transform: translateY(0) scale(0.8); opacity: 1; } }
+
+        /* 족보 하이라이트 */
+        .highlight-card .card-front { box-shadow: 0 0 15px 5px var(--accent-gold); border: 2px solid var(--accent-gold); z-index: 5; }
+
+        /* --- Fixed Controls Area (흔들림 방지) --- */
+        .controls-wrapper { width: 100%; height: 170px; display: flex; justify-content: center; padding: 10px; background: #08060c; border-top: 1px solid #1f112e; z-index: 20; position: relative; }
+        
+        .controls-mask { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8,6,12, 0.85); z-index: 25; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--accent); letter-spacing: 1px; }
 
         .controls { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
         
         .action-row { display: flex; gap: 10px; width: 100%; }
         .action-row button { flex: 1; margin: 0; padding: 16px; font-size: 15px; border-radius: 10px;}
         
-        /* Raise Slider Area */
-        #raisePanel { display: none; flex-direction: column; gap: 10px; background: #1a1e24; padding: 12px; border-radius: 10px; border: 1px solid #444; width: 100%; }
+        /* Raise Area */
+        #raisePanel { display: none; flex-direction: column; gap: 10px; background: #181124; padding: 12px; border-radius: 10px; border: 1px solid #322147; width: 100%; }
         .raise-presets { display: flex; gap: 6px; }
-        .raise-presets button { flex: 1; margin: 0; padding: 8px; font-size: 12px; background: #333; border-radius: 6px; }
+        .raise-presets button { flex: 1; margin: 0; padding: 8px; font-size: 12px; background: #291b38; border-radius: 6px; }
         .slider-container { display: flex; align-items: center; gap: 10px; }
         .slider-container input[type="range"] { flex: 1; accent-color: var(--accent-gold); }
         .slider-val { font-size: 16px; font-weight: bold; color: var(--accent-gold); min-width: 60px; text-align: right; }
@@ -150,7 +139,6 @@
         .btn-confirm-raise { flex: 2; background: var(--accent-gold) !important; color: black !important; margin:0; padding: 12px;}
         .btn-cancel-raise { flex: 1; background: #555 !important; margin:0; padding: 12px;}
 
-        /* Show/Muck Area */
         #showMuckPanel { display: none; gap: 10px; width: 100%; }
         #showMuckPanel button { flex: 1; margin: 0; padding: 16px; font-size: 14px; border-radius: 10px;}
 
@@ -159,14 +147,14 @@
 
         @media (max-width: 600px) {
             .poker-table { border-width: 8px; border-radius: 80px; }
-            :root { --card-w: 40px; --card-h: 58px; }
+            :root { --card-w: 42px; --card-h: 60px; }
             .player { width: 70px; }
             .player.is-me { width: 95px; }
             .player.is-me .player-info { padding: 4px; }
             .player.is-me .player-name { font-size: 11px; }
             .player.is-me .player-chips { font-size: 13px; }
-            .player.is-me .player-cards .card { transform: scale(0.8); margin: 0 -6px; }
-            .controls-wrapper { height: 160px; padding: 8px; }
+            .player.is-me .player-cards .card-container { transform: scale(0.85); margin: 0 -6px; }
+            .controls-wrapper { height: 165px; padding: 8px; }
             .action-row button { padding: 14px; font-size: 13px; }
             .raise-presets button { padding: 8px; font-size: 11px; }
             .slider-val { font-size: 14px; }
@@ -176,7 +164,6 @@
 </head>
 <body>
 
-    <!-- Lobby -->
     <div id="lobby" class="view active">
         <div class="box">
             <h1>DREAM POKER</h1>
@@ -195,7 +182,6 @@
         </div>
     </div>
 
-    <!-- Game -->
     <div id="game" class="view">
         <div class="header">
             <div><span id="roomInfo">Room: ----</span> | <span id="phaseInfo">WAITING</span></div>
@@ -214,22 +200,18 @@
             <div id="playersList"></div>
         </div>
 
-        <!-- Fixed Bottom Controls Wrapper -->
         <div class="controls-wrapper">
-            <!-- Mask blocks interaction when not my turn -->
             <div id="controlsMask" class="controls-mask">⏳ WAITING FOR OTHERS...</div>
 
             <div class="controls" id="actionPanel">
                 <button id="btnLeave" onclick="leaveRoom()">🚪 LEAVE GAME (BANKRUPT)</button>
                 
-                <!-- Main Action Buttons -->
                 <div class="action-row" id="mainActions">
                     <button class="btn-gray" id="btnFold" onclick="sendAction('fold')">FOLD</button>
                     <button class="btn-join" onclick="sendAction('check_call')" id="btnCall">CHECK</button>
                     <button style="background: #e67e22;" onclick="toggleRaisePanel(true)">RAISE ⬆</button>
                 </div>
 
-                <!-- Raise Slider Interface -->
                 <div id="raisePanel">
                     <div class="raise-presets">
                         <button onclick="setRaisePreset(0.1)">1/10</button>
@@ -238,7 +220,7 @@
                         <button onclick="setRaisePreset(1)" style="background: #c0392b;">ALL IN</button>
                     </div>
                     <div class="slider-container">
-                        <input type="range" id="raiseSlider" min="0" max="100" value="0" oninput="updateRaiseDisplay()">
+                        <input type="range" id="raiseSlider" min="0" max="100" step="10" value="0" oninput="updateRaiseDisplay()">
                         <div class="slider-val" id="raiseDisplay">0</div>
                     </div>
                     <div class="raise-confirm-row">
@@ -247,7 +229,6 @@
                     </div>
                 </div>
 
-                <!-- Show/Muck Buttons -->
                 <div class="action-row" id="showMuckPanel">
                     <button class="btn-gray" onclick="sendShowMuck('muck')">MUCK (Hide)</button>
                     <button style="background: #3498db;" onclick="sendShowMuck('show')">SHOW HAND 👁️</button>
@@ -269,16 +250,14 @@
     let gameState = {}; 
 
     let customRaiseAmount = 0; 
-    let knownCardsCounts = { comm: 0, me: 0 }; // 애니메이션 리플레이 방지용 변수
+    let knownCardsCounts = { comm: 0, me: 0 }; 
+
+    // 🔥 플레이어 고유 색상 배열
+    const PLAYER_COLORS = ['#9b59b6', '#3498db', '#e67e22', '#e74c3c', '#1abc9c', '#f1c40f', '#d35400', '#2980b9'];
 
     const peerConfig = {
         pingInterval: 5000,
-        config: {
-            'iceServers': [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        }
+        config: { 'iceServers': [ { urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' } ] }
     };
 
     function resetGame() {
@@ -299,21 +278,11 @@
     const suits = [{s:'♠', c:'black'}, {s:'♥', c:'red'}, {s:'♦', c:'red'}, {s:'♣', c:'black'}];
     const values = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
 
-    function getRandomName(existingNames) {
-        const colors = ['Red','Blue','Gold','Silver','Dark','Pink','Neon','Aqua'];
-        const animals = ['Wolf','Fox','Bear','Hawk','Shark','Panda','Tiger','Owl'];
-        let name = "";
-        do {
-            name = colors[Math.floor(Math.random()*colors.length)] + " " + animals[Math.floor(Math.random()*animals.length)];
-        } while(existingNames.includes(name));
-        return name;
-    }
-
     function showStatus(msg) { document.getElementById('statusMsg').innerText = msg; }
     function switchView(viewId) { document.querySelectorAll('.view').forEach(el => el.classList.remove('active')); document.getElementById(viewId).classList.add('active'); }
 
     function initPeer(id, callback) {
-        peer = new Peer('dream-pkr-' + id, peerConfig);
+        peer = new Peer('dream-pkr-final-' + id, peerConfig);
         peer.on('open', callback);
         peer.on('error', err => showStatus("Network error. Try again."));
         peer.on('disconnected', () => { peer.reconnect(); });
@@ -322,7 +291,7 @@
     function createRoom() {
         resetGame(); 
         let inputName = document.getElementById('playerName').value.trim();
-        myName = inputName !== '' ? inputName : getRandomName([]);
+        myName = inputName !== '' ? inputName : `Player ${Math.floor(Math.random()*1000)}`;
         
         gameState.startingChips = parseInt(document.getElementById('startChips').value) || 5000;
         gameState.baseBet = parseInt(document.getElementById('baseBet').value) || 100;
@@ -335,7 +304,8 @@
             gameState.lastWinnerId = myId; 
             document.getElementById('roomInfo').innerText = 'Room: ' + roomCode;
             
-            gameState.players.push({ id: myId, token: myToken, name: myName, chips: gameState.startingChips, bet: 0, folded: false, isWaiting: false, acted: false, connected: true, hasLeft: false, cards: [], wantsToShow: false, wonAmount: 0 });
+            let color = PLAYER_COLORS[0];
+            gameState.players.push({ id: myId, token: myToken, name: myName, color: color, chips: gameState.startingChips, bet: 0, folded: false, isWaiting: false, acted: false, connected: true, hasLeft: false, cards: [], wantsToShow: false, wonAmount: 0 });
             
             peer.on('connection', conn => {
                 conn.on('data', data => handleClientMessage(conn, data));
@@ -355,7 +325,7 @@
         
         initPeer(tempId, (id) => {
             myId = id; 
-            hostConn = peer.connect('dream-pkr-' + code, { reliable: true });
+            hostConn = peer.connect('dream-pkr-final-' + code, { reliable: true });
             
             let joinTimeout = setTimeout(() => {
                 showStatus("Connection Failed.");
@@ -389,11 +359,14 @@
             let connIdx = connections.findIndex(c => c.peer === clientId);
             if(connIdx === -1) connections.push(conn); else connections[connIdx] = conn;
 
-            let existingPlayer = gameState.players.find(p => p.token === data.token);
-            let joinedName = data.name || getRandomName(gameState.players.map(p=>p.name));
+            // 🔥 패치: 토큰이 다르더라도 닉네임이 같고 연결끊긴 유저가 있으면 덮어씌움 (복제 완벽 방지)
+            let existingPlayer = gameState.players.find(p => p.token === data.token) || gameState.players.find(p => p.name === data.name && !p.connected);
+            
+            let joinedName = data.name || `Player ${Math.floor(Math.random()*1000)}`;
 
             if (existingPlayer) {
                 existingPlayer.id = clientId; 
+                existingPlayer.token = data.token; // 토큰 갱신
                 existingPlayer.name = joinedName; 
                 existingPlayer.connected = true;
                 existingPlayer.hasLeft = false;
@@ -406,7 +379,8 @@
                 }
             } else {
                 let isWait = (gameState.phase !== 'waiting' && gameState.phase !== 'showdown');
-                gameState.players.push({ id: clientId, token: data.token, name: joinedName, chips: gameState.startingChips, bet: 0, folded: false, isWaiting: isWait, acted: false, connected: true, hasLeft: false, cards: [], wantsToShow: false, wonAmount: 0 });
+                let color = PLAYER_COLORS[gameState.players.length % PLAYER_COLORS.length];
+                gameState.players.push({ id: clientId, token: data.token, name: joinedName, color: color, chips: gameState.startingChips, bet: 0, folded: false, isWaiting: isWait, acted: false, connected: true, hasLeft: false, cards: [], wantsToShow: false, wonAmount: 0 });
             }
             broadcastState();
         } 
@@ -729,23 +703,19 @@
         return gameState.winningCards.some(wc => wc.suit === card.suit && wc.value === card.value);
     }
 
-    // 🔥 가장 확실하고 안정적인 2D Flip CSS 연동 함수
+    // 🔥 완벽한 3D CSS 플립 (애니메이션 리플레이 없음)
     function getCardHTML(card, isNew = false) {
         if(!card) return '';
         let isRevealed = (card !== 'hidden');
         let isHl = (gameState.phase === 'showdown' && isRevealed && isWinningCard(card)) ? 'highlight-card' : '';
         let dealClass = isNew ? 'deal-in' : '';
-        
-        // 카드 컨테이너가 날아옴 -> 내부에 flip 클래스 부여 (나올때 앞면인 경우 0.4초 딜레이 플립)
-        let flipClass = (isRevealed && isNew) ? 'do-flip' : '';
-        // 기존에 이미 앞면인 카드는 그냥 유지
-        let stateClass = (isRevealed && !isNew) ? 'is-revealed' : '';
+        let stateClass = isRevealed ? 'is-revealed' : '';
 
         return `
-            <div class="card ${dealClass}">
-                <div class="card-inner ${flipClass} ${stateClass} ${isHl}">
-                    <div class="card-back"></div>
-                    <div class="card-front ${isRevealed && (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black'}">
+            <div class="card-container ${dealClass}">
+                <div class="card-inner ${stateClass} ${isHl}">
+                    <div class="card-face card-back"></div>
+                    <div class="card-face card-front ${isRevealed && (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black'}">
                         <div class="card-top">${isRevealed ? card.value + '<br>' + card.suit : ''}</div>
                         <div class="card-center">${isRevealed ? card.suit : ''}</div>
                     </div>
@@ -766,9 +736,9 @@
         if (gameState.phase === 'showdown') banner.style.display = 'block';
         else banner.style.display = 'none';
 
-        // 중앙 카드 렌더링
+        // 중앙 카드 렌더링 (리렌더링 방지)
         const commDiv = document.getElementById('communityCards');
-        if (commDiv.children.length !== gameState.communityCards.length) {
+        if (commDiv.children.length !== gameState.communityCards.length || gameState.phase === 'showdown') {
             let html = '';
             gameState.communityCards.forEach((c, i) => {
                 let isNew = i >= knownCardsCounts.comm;
@@ -827,16 +797,17 @@
             else if(p.isWaiting) statusTxt = "WAITING";
 
             let allinBadge = (p.chips === 0 && !p.folded && !p.isWaiting && p.acted) ? `<div class="allin-badge">ALL IN</div>` : '';
-            
-            // 🔥 승리 시 +딴금액 표시
             let wonTextHtml = p.wonAmount > 0 ? `<br><span class="won-text">(+${p.wonAmount})</span>` : '';
+            
+            // 고유 닉네임 컬러 적용
+            let nameColor = isMeClass ? '' : `background-color: ${p.color};`;
 
             playersDiv.innerHTML += `
                 <div class="player ${isActive} ${isFolded} ${isDisconn} ${hasBet} ${isWait} ${isLeader} ${isMeClass}" id="player-${p.id}" style="left: ${left}%; top: ${top}%;">
                     <div class="player-cards">${displayCards}</div>
                     <div class="player-info">
                         ${statusTxt ? `<div class="status-mask">${statusTxt}</div>` : ''}
-                        <div class="player-name">${p.name} ${isLeader?'👑':''}</div>
+                        <div class="player-name" style="${nameColor}">${p.name} ${isLeader?'👑':''}</div>
                         <div class="player-chips">${p.chips} ${wonTextHtml}</div>
                         ${allinBadge}
                         <div class="player-timer" id="timer-${p.id}"></div>
@@ -846,7 +817,7 @@
             `;
         });
 
-        // 🔥 컨트롤 UI 관리
+        // 🔥 컨트롤 UI 로직 (흔들림 없는 고정형)
         const ctrlMask = document.getElementById('controlsMask');
         const mainActions = document.getElementById('mainActions');
         const raisePanel = document.getElementById('raisePanel');
@@ -857,8 +828,9 @@
         let currentTurnPlayer = gameState.players[gameState.turnIndex];
         let isMyTurn = (currentTurnPlayer && currentTurnPlayer.id === myId);
         let amIActive = (myData && !myData.folded && !myData.isWaiting && !myData.hasLeft && myData.chips > 0);
-        
-        // 일단 모든 조작 버튼 숨기고 마스크 켬
+        let isPlayingPhase = (gameState.phase !== 'waiting' && gameState.phase !== 'showdown');
+
+        // 전체 버튼 끄고 마스크 활성화
         ctrlMask.style.display = 'flex';
         mainActions.style.display = 'none';
         showMuckPanel.style.display = 'none';
@@ -869,12 +841,12 @@
             showMuckPanel.style.display = 'flex';
             raisePanel.style.display = 'none';
         }
-        else if(myData && myData.chips === 0 && (gameState.phase === 'waiting' || myData.folded)) {
+        else if(myData && myData.chips === 0 && (!isPlayingPhase || myData.folded)) {
             ctrlMask.style.display = 'none'; 
             btnLeave.style.display = 'block';
             raisePanel.style.display = 'none';
         } 
-        else if(isMyTurn && amIActive && gameState.phase !== 'waiting' && gameState.phase !== 'showdown') {
+        else if(isMyTurn && amIActive && isPlayingPhase) {
             ctrlMask.style.display = 'none'; 
             if(raisePanel.style.display !== 'flex') mainActions.style.display = 'flex'; 
             
@@ -882,10 +854,9 @@
             if(callAmount > 0) { btnCall.innerText = `CALL ${callAmount}`; btnCall.style.background = '#dc3545'; } 
             else { btnCall.innerText = 'CHECK'; btnCall.style.background = '#0d6efd'; }
             
-            // 내 턴이 올 때마다 슬라이더 설정
-            document.getElementById('raiseSlider').max = myData.chips;
+            // 10단위 강제 슬라이더
+            document.getElementById('raiseSlider').max = Math.floor(myData.chips / 10) * 10;
         } else {
-            // 내 턴이 아니면 레이즈 창도 강제 닫음
             raisePanel.style.display = 'none';
         }
 
@@ -911,13 +882,13 @@
         }
     }
 
-    // 🔥 레이즈 UI 컨트롤
     function toggleRaisePanel(show) {
         document.getElementById('mainActions').style.display = show ? 'none' : 'flex';
         document.getElementById('raisePanel').style.display = show ? 'flex' : 'none';
         if(show) {
             let p = gameState.players.find(x => x.id === myId);
             customRaiseAmount = gameState.currentBet === 0 ? gameState.baseBet : gameState.currentBet * 2;
+            customRaiseAmount = Math.floor(customRaiseAmount / 10) * 10; // 10단위 정렬
             if (customRaiseAmount > p.chips) customRaiseAmount = p.chips;
             document.getElementById('raiseSlider').value = customRaiseAmount;
             updateRaiseDisplay();
@@ -932,8 +903,14 @@
     function setRaisePreset(fraction) {
         let p = gameState.players.find(x => x.id === myId);
         if(!p) return;
-        customRaiseAmount = Math.floor(p.chips * fraction);
-        if(customRaiseAmount <= 0) customRaiseAmount = p.chips > 0 ? 1 : 0;
+        
+        if (fraction === 1) {
+            customRaiseAmount = p.chips; // 올인은 10단위 무시하고 탈탈 털기
+        } else {
+            customRaiseAmount = Math.floor((p.chips * fraction) / 10) * 10;
+            if(customRaiseAmount <= 0) customRaiseAmount = p.chips > 0 ? 10 : 0;
+        }
+        
         document.getElementById('raiseSlider').value = customRaiseAmount;
         updateRaiseDisplay();
     }
