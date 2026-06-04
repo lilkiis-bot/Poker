@@ -13,7 +13,7 @@
             --surface:     #141414;
             --surface2:    #1e1e1e;
             --border:      #2e2e2e;
-            --table-rim:   #1a4d2e;
+            --table-rim:   #3b1f0a;
             --table-felt:  #1c5e35;
             --gold:        #c9a94a;
             --gold-light:  #f0cc70;
@@ -90,7 +90,7 @@
         .header {
             width: 100%; height: 48px; padding: 0 14px;
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--surface); border-bottom: 1px solid var(--border);
+            background: var(--surface); border-bottom: 1px solid #3b1f0a;
             z-index: 10;
         }
         .header-left { font-size: 12px; color: var(--text-dim); font-weight: 500; letter-spacing: 0.5px; }
@@ -168,9 +168,13 @@
         .poker-table {
             position: absolute; width: 92%; height: 80%;
             background: var(--table-felt);
-            border: 12px solid var(--table-rim);
+            border: 16px solid var(--table-rim);
             border-radius: 140px;
-            box-shadow: inset 0 0 70px rgba(0,0,0,0.5), 0 16px 50px rgba(0,0,0,0.8);
+            box-shadow:
+                inset 0 0 70px rgba(0,0,0,0.5),
+                0 0 0 3px #6b3a18,
+                0 0 0 5px #2a1406,
+                0 16px 50px rgba(0,0,0,0.9);
         }
         .center-area { display: flex; flex-direction: column; align-items: center; z-index: 5; }
         .community-cards { display: flex; gap: 4px; margin-bottom: 10px; min-height: var(--card-h); align-items: center; }
@@ -322,7 +326,7 @@
         .controls-wrapper {
             width: 100%; height: 170px;
             display: flex; justify-content: center; padding: 10px;
-            background: var(--surface); border-top: 1px solid var(--border);
+            background: var(--surface); border-top: 1px solid #3b1f0a;
             z-index: 20; position: relative;
         }
         .controls-mask {
@@ -377,7 +381,7 @@
 
         /* ===================== RESPONSIVE ===================== */
         @media (max-width: 600px) {
-            .poker-table { border-width: 8px; border-radius: 80px; }
+            .poker-table { border-width: 10px; border-radius: 80px; }
             :root { --card-w: 42px; --card-h: 60px; }
             .player { width: 68px; }
             .player.is-me { width: 90px; }
@@ -644,7 +648,8 @@
             if (p && p.connected && !p.hasLeft) {
                 let hs = JSON.parse(JSON.stringify(gameState));
                 hs.players.forEach(hp => {
-                    let canSee = (hp.id === conn.peer) || (hs.phase === 'showdown' && hp.wantsToShow);
+                    // token 기반으로 본인 카드 여부 판단 (id 변경 타이밍 이슈 방지)
+                    let canSee = (hp.token === p.token) || (hs.phase === 'showdown' && hp.wantsToShow);
                     if (!canSee) hp.cards = hp.cards.length > 0 ? ['hidden','hidden'] : [];
                 });
                 conn.send({ type: 'sync', state: hs });
@@ -900,17 +905,16 @@
 
     function getCardHTML(card, isNew) {
         if (!card) return '';
-        const isRevealed = (card !== 'hidden');
-        const dealCls    = isNew ? 'deal-in' : '';
-        const hlCls      = (gameState.phase === 'showdown' && isRevealed && isWinningCard(card)) ? 'highlight-card' : '';
+        const dealCls = isNew ? 'deal-in' : '';
 
-        if (!isRevealed) {
-            // 뒷면
+        // 뒷면: 'hidden' 문자열이거나 suit/value 없는 경우
+        if (card === 'hidden' || typeof card !== 'object' || !card.suit || !card.value) {
             return `<div class="card-container ${dealCls}"><div class="card-back-face"></div></div>`;
         }
 
         // 앞면
         const colorCls = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
+        const hlCls    = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
         return `<div class="card-container ${dealCls} ${hlCls}">
             <div class="card-front-face ${colorCls}">
                 <div class="card-val-top">${card.value}<br>${card.suit}</div>
@@ -957,8 +961,13 @@
         playersDiv.innerHTML = '';
         let valid   = gameState.players.filter(p => !p.hasLeft);
         let total   = valid.length;
-        let myIndex = valid.findIndex(p => p.id === myId); if (myIndex === -1) myIndex = 0;
-        let myData  = valid.find(p => p.id === myId) || null;
+        // token 기반으로 본인 찾기 (id 동기화 타이밍 문제 방지)
+        let myIndex = valid.findIndex(p => p.token === myToken);
+        if (myIndex === -1) myIndex = valid.findIndex(p => p.id === myId);
+        if (myIndex === -1) myIndex = 0;
+        let myData  = valid[myIndex] || null;
+        // myId/myName 최신화
+        if (myData) { myId = myData.id; myName = myData.name; }
         let maxChips = Math.max(...valid.map(p => p.chips));
 
         // preflop 시작 직후 0.8초 이내면 새 카드 딜 애니메이션 적용
@@ -988,10 +997,13 @@
 
             let displayCards = '';
             if (p.cards && p.cards.length > 0) {
-                const canSee = (p.id === myId) || (gameState.phase === 'showdown' && p.wantsToShow);
+                // token 기반으로 본인 카드 판단 — 가장 확실한 기준
+                const isMe   = (p.token === myToken);
+                const canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
                 displayCards = p.cards.map(c => {
-                    const actual = canSee ? c : 'hidden';
-                    const isNew  = isJustDealt; // 방금 딜된 경우만 애니메이션
+                    // canSee이고 카드가 실제 객체(hidden 문자열이 아님)이면 앞면
+                    const actual = (canSee && c !== 'hidden') ? c : 'hidden';
+                    const isNew  = isMe && isJustDealt;
                     return getCardHTML(actual, isNew);
                 }).join('');
             }
@@ -1129,5 +1141,5 @@
         toggleRaisePanel(false);
     }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0684096de3a6995',t:'MTc4MDU4OTg5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0684797f9fa9353',t:'MTc4MDU5MDE4MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
