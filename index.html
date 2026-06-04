@@ -234,7 +234,7 @@
             text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.7);
             position: relative; z-index: 1;
         }
-        .player.active-turn .player-info { border-color: var(--gold); box-shadow: 0 0 14px rgba(201,169,74,0.7); }
+        /* active-turn → 아래 @keyframes turnPulse 에서 처리 */
         .player.chip-leader .player-info { border-color: var(--gold-light); box-shadow: 0 0 10px rgba(240,204,112,0.35); }
         .player.folded { opacity: 0.45; filter: grayscale(70%); }
         .player.disconnected { filter: grayscale(100%); opacity: 0.35; }
@@ -289,54 +289,126 @@
             width: var(--card-w); height: var(--card-h);
             margin: 0 2px;
             position: relative; display: inline-block;
-            border-radius: 6px;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
+            border-radius: 7px;
             flex-shrink: 0;
+            filter: drop-shadow(1px 3px 5px rgba(0,0,0,0.7));
         }
+
         /* 뒷면 */
         .card-back-face {
             width: 100%; height: 100%;
-            border-radius: 6px;
-            background: linear-gradient(135deg, #1a2a3a 25%, #0e1820 100%);
-            border: 2px solid #2a4a6a;
+            border-radius: 7px;
+            background: linear-gradient(160deg, #1c2e42 0%, #0f1c2a 100%);
+            border: 1.5px solid #3a5a78;
             position: relative;
+            overflow: hidden;
+        }
+        /* 뒷면 격자 패턴 */
+        .card-back-face::before {
+            content: '';
+            position: absolute; inset: 5px;
+            border-radius: 4px;
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(58,90,120,0.35) 0px, rgba(58,90,120,0.35) 1px,
+                    transparent 1px, transparent 6px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    rgba(58,90,120,0.35) 0px, rgba(58,90,120,0.35) 1px,
+                    transparent 1px, transparent 6px
+                );
         }
         .card-back-face::after {
             content: '';
-            position: absolute; inset: 4px;
-            border: 1px solid rgba(80,120,160,0.25);
+            position: absolute; inset: 5px;
+            border: 1px solid rgba(58,90,120,0.5);
             border-radius: 3px;
         }
+
         /* 앞면 */
         .card-front-face {
             width: 100%; height: 100%;
-            border-radius: 6px;
-            background: #f8f6f0;
-            border: 1px solid #ccc;
-            display: flex; flex-direction: column;
-            justify-content: space-between;
-            padding: 4px;
-            font-weight: 800;
+            border-radius: 7px;
+            background: #fafaf8;
+            border: 1.5px solid #d0cfc8;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 3px 4px;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-weight: 700;
             position: relative;
+            overflow: hidden;
         }
-        .card-front-face.red   { color: #b82020; }
-        .card-front-face.black { color: #1a1a1a; }
-        .card-val-top    { font-size: 13px; line-height: 1; text-align: left; }
-        .card-suit-mid   { font-size: 22px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .card-val-bot    { font-size: 13px; line-height: 1; text-align: right; transform: rotate(180deg); }
+        /* 앞면 미묘한 내부 그림자 */
+        .card-front-face::before {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+            pointer-events: none;
+        }
+        .card-front-face.red   { color: #c0181a; }
+        .card-front-face.black { color: #111; }
+
+        /* 좌상단: 숫자 + 수트 */
+        .card-corner-tl {
+            display: flex; flex-direction: column;
+            align-items: flex-start;
+            line-height: 1;
+            font-size: 14px;
+        }
+        .card-corner-tl .cv { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; }
+        .card-corner-tl .cs { font-size: 11px; margin-top: -1px; }
+
+        /* 중앙 큰 수트 */
+        .card-suit-center {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        /* 우하단: 숫자 + 수트 (180도 회전) */
+        .card-corner-br {
+            display: flex; flex-direction: column;
+            align-items: flex-end;
+            transform: rotate(180deg);
+            line-height: 1;
+        }
+        .card-corner-br .cv { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; }
+        .card-corner-br .cs { font-size: 11px; margin-top: -1px; }
 
         /* 딜 애니메이션 */
         .deal-in { animation: dealFly 0.3s ease-out; }
         @keyframes dealFly {
             0%   { opacity: 0; transform: translateY(-40px) scale(0.7); }
-            100% { opacity: 1; transform: translateY(0)     scale(1); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* 내 카드 약간 크게 */
-        .player.is-me .player-cards .card-container { transform: scale(1.06); margin: 0 2px; }
+        /* 내 카드 크게 */
+        .player.is-me .player-cards .card-container { transform: scale(1.08); margin: 0 3px; }
 
         /* 쇼다운 족보 하이라이트 */
-        .highlight-card .card-front-face { box-shadow: 0 0 12px 3px var(--gold); border: 2px solid var(--gold); }
+        .highlight-card .card-front-face {
+            box-shadow: 0 0 0 2px var(--gold), 0 0 14px 3px rgba(201,169,74,0.7);
+            border-color: var(--gold);
+        }
+
+        /* ===================== ACTIVE TURN — 초록 그라디언트 펄스 ===================== */
+        @keyframes turnPulse {
+            0%   { box-shadow: 0 0 0 2px #2ecc71, 0 0 8px 2px rgba(46,204,113,0.4); background: rgba(46,204,113,0.06); }
+            50%  { box-shadow: 0 0 0 3px #57e89a, 0 0 22px 6px rgba(46,204,113,0.7); background: rgba(46,204,113,0.16); }
+            100% { box-shadow: 0 0 0 2px #2ecc71, 0 0 8px 2px rgba(46,204,113,0.4); background: rgba(46,204,113,0.06); }
+        }
+        .player.active-turn .player-info {
+            border-color: #2ecc71 !important;
+            animation: turnPulse 1.2s ease-in-out infinite;
+        }
+        /* 내 차례일 때는 더 강하게 */
+        .player.active-turn.is-me .player-info {
+            animation: turnPulse 0.9s ease-in-out infinite;
+        }
 
         /* ===================== CONTROLS ===================== */
         .controls-wrapper {
@@ -404,16 +476,19 @@
         /* ===================== RESPONSIVE ===================== */
         @media (max-width: 600px) {
             .poker-table { border-width: 10px; border-radius: 80px; }
-            :root { --card-w: 42px; --card-h: 60px; }
+            :root { --card-w: 40px; --card-h: 57px; }
             .player { width: 68px; }
             .player.is-me { width: 90px; }
-            .player.is-me .player-cards .card-container { transform: scale(0.95); margin: 0 1px; }
+            .player.is-me .player-cards .card-container { transform: scale(1.0); margin: 0 2px; }
             .controls-wrapper { height: 162px; padding: 8px; }
             .action-row button { padding: 13px; font-size: 13px; }
             .raise-presets button { padding: 7px; font-size: 11px; }
             .slider-val { font-size: 13px; }
             .btn-confirm-raise, .btn-cancel-raise { padding: 10px; font-size: 12px; }
             #hostStartBtn { font-size: 15px; padding: 13px 28px; }
+            .card-corner-tl .cv, .card-corner-br .cv { font-size: 12px; }
+            .card-corner-tl .cs, .card-corner-br .cs { font-size: 10px; }
+            .card-suit-center { font-size: 22px; }
         }
     </style>
 </head>
@@ -450,10 +525,7 @@
         </div>
         <button class="btn-edit-name" onclick="toggleRenameModal()">EDIT NAME</button>
     </div>
-    <!-- 방 코드 별도 표시 바 (항상 헤더 바로 아래 고정) -->
-    <div id="roomCodeBar" style="display:none; width:100%; background:#1a1a1a; border-bottom:1px solid #3b1f0a; padding:5px 16px; text-align:center; font-size:11px; color:var(--text-dim); letter-spacing:0.5px; flex-shrink:0;">
-        Room Code: <strong id="roomCodeDisplay" style="color:var(--gold-light);font-size:14px;letter-spacing:3px;"></strong>
-    </div>
+
 
     <!-- Inline Rename Modal -->
     <div id="renameModal">
@@ -576,8 +648,6 @@
             isHost = true; myId = id;
             gameState.lastWinnerId = myId;
             document.getElementById('roomInfo').innerText = 'ROOM: ' + roomCode;
-            document.getElementById('roomCodeDisplay').innerText = roomCode;
-            document.getElementById('roomCodeBar').style.display = 'block';
             gameState.players.push({
                 id: myId, token: myToken, name: myName,
                 color: PLAYER_COLORS[0], chips: gameState.startingChips,
@@ -606,8 +676,6 @@
                 clearTimeout(joinTimeout);
                 isHost = false;
                 document.getElementById('roomInfo').innerText = 'ROOM: ' + code;
-                document.getElementById('roomCodeDisplay').innerText = code;
-                document.getElementById('roomCodeBar').style.display = 'block';
                 let inputName = document.getElementById('playerName').value.trim();
                 hostConn.send({ type: 'join', token: myToken, name: inputName });
                 switchView('game');
@@ -678,8 +746,12 @@
             if (p && p.connected && !p.hasLeft) {
                 let hs = JSON.parse(JSON.stringify(gameState));
                 hs.players.forEach(hp => {
-                    // token 기반으로 본인 카드 여부 판단 (id 변경 타이밍 이슈 방지)
-                    let canSee = (hp.token === p.token) || (hs.phase === 'showdown' && hp.wantsToShow);
+                    // 본인 카드: token 일치 + 폴드 안 했을 때만 앞면
+                    // showdown: wantsToShow 한 경우만 공개
+                    // 그 외: 항상 뒷면
+                    const isSelf   = (hp.token === p.token);
+                    const revealed = (hs.phase === 'showdown' && hp.wantsToShow && !hp.folded);
+                    const canSee   = (isSelf && !hp.folded) || revealed;
                     if (!canSee) hp.cards = hp.cards.length > 0 ? ['hidden','hidden'] : [];
                 });
                 conn.send({ type: 'sync', state: hs });
@@ -947,9 +1019,9 @@
         const hlCls    = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
         return `<div class="card-container ${dealCls} ${hlCls}">
             <div class="card-front-face ${colorCls}">
-                <div class="card-val-top">${card.value}<br>${card.suit}</div>
-                <div class="card-suit-mid">${card.suit}</div>
-                <div class="card-val-bot">${card.value}<br>${card.suit}</div>
+                <div class="card-corner-tl"><span class="cv">${card.value}</span><span class="cs">${card.suit}</span></div>
+                <div class="card-suit-center">${card.suit}</div>
+                <div class="card-corner-br"><span class="cv">${card.value}</span><span class="cs">${card.suit}</span></div>
             </div>
         </div>`;
     }
@@ -1022,16 +1094,16 @@
             let angle   = (shifted / total) * Math.PI * 2 + (Math.PI / 2);
             let mobile  = window.innerWidth <= 600;
             let rx = mobile ? 44 : 45, ry = mobile ? 38 : 34;
-            let left = 50 + rx * Math.cos(angle);
+                        let left = 50 + rx * Math.cos(angle);
             let top  = 50 + ry * Math.sin(angle);
 
             let displayCards = '';
             if (p.cards && p.cards.length > 0) {
-                // token 기반으로 본인 카드 판단 — 가장 확실한 기준
                 const isMe   = (p.token === myToken);
-                const canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
+                // 본인: 폴드 전까지만 앞면. 폴드하면 뒷면.
+                // 상대: showdown + wantsToShow + 폴드 안 했을 때만 앞면.
+                const canSee = (isMe && !p.folded) || (gameState.phase === 'showdown' && p.wantsToShow && !p.folded);
                 displayCards = p.cards.map(c => {
-                    // canSee이고 카드가 실제 객체(hidden 문자열이 아님)이면 앞면
                     const actual = (canSee && c !== 'hidden') ? c : 'hidden';
                     const isNew  = isMe && isJustDealt;
                     return getCardHTML(actual, isNew);
@@ -1094,7 +1166,8 @@
         showMuckPanel.style.display= 'none';
         btnLeave.style.display     = 'none';
 
-        if (gameState.phase === 'showdown' && myData && !myData.wantsToShow && !myData.hasLeft && myData.cards && myData.cards.length > 0) {
+        // showdown: 폴드 안 했고, 아직 show/muck 선택 안 한 경우만 패널 표시
+        if (gameState.phase === 'showdown' && myData && !myData.wantsToShow && !myData.hasLeft && !myData.folded && myData.cards && myData.cards.length > 0) {
             ctrlMask.style.display      = 'none';
             showMuckPanel.style.display = 'flex';
             raisePanel.style.display    = 'none';
@@ -1171,5 +1244,5 @@
         toggleRaisePanel(false);
     }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0684f47be0fd2f8',t:'MTc4MDU5MDQ5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
