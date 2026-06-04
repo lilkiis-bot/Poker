@@ -195,11 +195,13 @@
         .center-area { display: flex; flex-direction: column; align-items: center; z-index: 5; }
         .community-cards { display: flex; gap: 4px; margin-bottom: 10px; min-height: var(--card-h); align-items: center; }
         .pot-info {
-            background: rgba(0,0,0,0.6);
-            padding: 5px 18px; border-radius: 20px;
+            background: rgba(0,0,0,0.65);
+            padding: 5px 14px; border-radius: 20px;
             font-weight: 900; color: var(--gold-light);
             font-size: 13px; border: 1px solid rgba(201,169,74,0.4);
             letter-spacing: 0.5px;
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 80px;
         }
 
         /* ===================== START BUTTON ===================== */
@@ -241,13 +243,30 @@
         .player-name { font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 3px; padding: 2px 3px; }
         .player-chips { font-size: 12px; color: #ddd; font-weight: 900; margin-top: 2px; }
         .player-timer { font-size: 10px; color: #c04040; font-weight: 700; margin-top: 1px; min-height: 12px; }
-        .player-bet {
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.85); padding: 2px 8px;
-            border-radius: 6px; font-size: 11px; color: var(--gold-light);
-            border: 1px solid rgba(201,169,74,0.5); display: none; z-index: 5;
+        /* ===================== CHIP VISUALS ===================== */
+        .chip-stack {
+            display: inline-flex; align-items: center; gap: 2px;
+            justify-content: center;
         }
-        .has-bet .player-bet { display: block; }
+        .chip-amount {
+            font-size: 11px; font-weight: 900; color: #ddd; letter-spacing: 0.3px;
+            vertical-align: middle;
+        }
+        .player.is-me .chip-amount { font-size: 13px; color: var(--gold-light); }
+
+        /* 베팅 칩 (플레이어 위) */
+        .player-bet {
+            position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+            display: none; z-index: 5; align-items: center; gap: 3px;
+            background: rgba(0,0,0,0.78); padding: 2px 6px;
+            border-radius: 8px; border: 1px solid rgba(201,169,74,0.35);
+            white-space: nowrap;
+        }
+        .has-bet .player-bet { display: flex; }
+        .bet-label { font-size: 10px; font-weight: 900; color: var(--gold-light); }
+
+        /* 팟 */
+        .pot-chips { display: flex; align-items: center; gap: 4px; justify-content: center; margin-bottom: 3px; }
         .status-mask {
             position: absolute; inset: 0; background: rgba(0,0,0,0.82);
             border-radius: 6px; display: none; align-items: center;
@@ -362,11 +381,26 @@
         .card-corner-tl .cv { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; }
         .card-corner-tl .cs { font-size: 11px; margin-top: -1px; }
 
-        /* 중앙 큰 수트 */
+        /* 중앙 큰 수트 (숫자패) */
         .card-suit-center {
             display: flex; align-items: center; justify-content: center;
             font-size: 28px;
             line-height: 1;
+        }
+
+        /* 중앙 SVG 그림 (J/Q/K/A) */
+        .card-face-art {
+            display: flex; align-items: center; justify-content: center;
+            flex: 1;
+            padding: 1px;
+        }
+        .card-face-art svg {
+            width: 100%; height: 100%;
+            max-width: 38px; max-height: 48px;
+        }
+        /* 그림패는 grid 대신 flex로 */
+        .card-front-face.face-card {
+            display: flex; flex-direction: column;
         }
 
         /* 우하단: 숫자 + 수트 (180도 회전) */
@@ -741,22 +775,25 @@
 
     function broadcastState() {
         if (!isHost) return;
+
+        // 클라이언트들에게 전송 (각자 본인 카드만 보이게)
         connections.forEach(conn => {
             let p = gameState.players.find(x => x.id === conn.peer);
             if (p && p.connected && !p.hasLeft) {
                 let hs = JSON.parse(JSON.stringify(gameState));
+                const viewerFolded = p.folded; // 이 클라이언트가 폴드했는지
                 hs.players.forEach(hp => {
-                    // 본인 카드: token 일치 + 폴드 안 했을 때만 앞면
-                    // showdown: wantsToShow 한 경우만 공개
-                    // 그 외: 항상 뒷면
                     const isSelf   = (hp.token === p.token);
-                    const revealed = (hs.phase === 'showdown' && hp.wantsToShow && !hp.folded);
+                    // 내 카드: 폴드 전까지만
+                    // 남 카드: 내가 폴드 안 했고 + showdown + wantsToShow + 상대도 폴드 안 함
+                    const revealed = (!viewerFolded && hs.phase === 'showdown' && hp.wantsToShow && !hp.folded);
                     const canSee   = (isSelf && !hp.folded) || revealed;
                     if (!canSee) hp.cards = hp.cards.length > 0 ? ['hidden','hidden'] : [];
                 });
                 conn.send({ type: 'sync', state: hs });
             }
         });
+
         updateUI();
     }
 
@@ -795,7 +832,7 @@
         if (si === -1 || gameState.players[si].folded || gameState.players[si].hasLeft)
             si = gameState.players.findIndex(p => !p.folded && !p.hasLeft);
         gameState.turnIndex = si;
-        gameState.turnEndTime = Date.now() + 20000;
+        gameState.turnEndTime = 0; // preflop 첫 플레이어는 시간 제한 없음
         lastRoundStartTime = Date.now(); // 딜 애니메이션 타이밍용
         broadcastState();
     }
@@ -1005,23 +1042,219 @@
         return gameState.winningCards.some(wc => wc.suit === card.suit && wc.value === card.value);
     }
 
+    // ===================== CHIP SVG =====================
+    // 금액에 따른 칩 색상 (포커 테이블 표준 배색)
+    const CHIP_TIERS = [
+        { min: 5000, color: '#2c2c2c', stripe: '#888', label: '5K' },  // 검정
+        { min: 1000, color: '#1a3a6e', stripe: '#6ab', label: '1K' },  // 파랑
+        { min:  500, color: '#6b2020', stripe: '#e88', label: '500' }, // 빨강
+        { min:  100, color: '#1a5c1a', stripe: '#6d6', label: '100' }, // 초록
+        { min:   50, color: '#6b4010', stripe: '#da8', label: '50'  }, // 주황
+        { min:   25, color: '#4a1a6e', stripe: '#a6d', label: '25'  }, // 보라
+        { min:    5, color: '#5a5a5a', stripe: '#bbb', label: '5'   }, // 회색
+        { min:    1, color: '#c9a94a', stripe: '#fff', label: '1'   }, // 금색
+    ];
+
+    // 단일 칩 SVG (size: 픽셀)
+    function chipSVG(color, stripe, size = 16) {
+        const r = size / 2;
+        const ir = r * 0.72; // 내부 원 반지름
+        return `<svg class="chip-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="${r}" cy="${r}" r="${r - 0.5}" fill="${color}" stroke="${stripe}" stroke-width="1.2"/>
+  <circle cx="${r}" cy="${r}" r="${ir}" fill="none" stroke="${stripe}" stroke-width="1" stroke-dasharray="3 2"/>
+  <circle cx="${r}" cy="${r}" r="${r * 0.38}" fill="${stripe}" opacity="0.55"/>
+</svg>`;
+    }
+
+    // 금액을 칩 스택 HTML로 변환
+    // maxChips: 최대 표시 칩 개수, size: 칩 크기
+    function chipsHTML(amount, maxChips = 4, size = 14) {
+        if (!amount || amount <= 0) return `<span class="chip-amount">0</span>`;
+        // 가장 높은 단위부터 분해
+        let remaining = amount;
+        let chips = [];
+        for (const tier of CHIP_TIERS) {
+            const count = Math.floor(remaining / tier.min);
+            if (count > 0) {
+                chips.push({ ...tier, count });
+                remaining -= count * tier.min;
+            }
+            if (remaining <= 0) break;
+        }
+        // 표시할 칩들 (최대 maxChips개 종류, 실제 개수는 1~3개씩)
+        let svgs = '';
+        let shown = 0;
+        for (const chip of chips) {
+            if (shown >= maxChips) break;
+            // 같은 색 칩 여러 개는 겹쳐서 표현 (최대 3개)
+            const repeat = Math.min(chip.count, 3, maxChips - shown);
+            for (let i = 0; i < repeat; i++) {
+                svgs += chipSVG(chip.color, chip.stripe, size);
+            }
+            shown += repeat;
+        }
+        // 숫자 표시 (1000 이상은 K 단위)
+        const label = amount >= 1000 ? (amount % 1000 === 0 ? (amount/1000) + 'K' : (amount/1000).toFixed(1).replace(/\.0$/,'') + 'K') : String(amount);
+        return `<span class="chip-stack">${svgs}</span><span class="chip-amount">${label}</span>`;
+    }
+
+    // 팟 전용 (좀 더 큰 칩)
+    function potChipsHTML(amount) {
+        if (!amount || amount <= 0) return `<span class="chip-amount" style="color:var(--gold-light)">0</span>`;
+        let remaining = amount;
+        let chips = [];
+        for (const tier of CHIP_TIERS) {
+            const count = Math.floor(remaining / tier.min);
+            if (count > 0) { chips.push({ ...tier, count }); remaining -= count * tier.min; }
+            if (remaining <= 0) break;
+        }
+        let svgs = '';
+        let shown = 0;
+        for (const chip of chips) {
+            if (shown >= 5) break;
+            const repeat = Math.min(chip.count, 3, 5 - shown);
+            for (let i = 0; i < repeat; i++) svgs += chipSVG(chip.color, chip.stripe, 18);
+            shown += repeat;
+        }
+        const label = amount >= 1000 ? (amount % 1000 === 0 ? (amount/1000)+'K' : (amount/1000).toFixed(1).replace(/\.0$/,'')+'K') : String(amount);
+        return `<div class="pot-chips">${svgs}</div><span style="font-weight:900;color:var(--gold-light);font-size:13px">${label}</span>`;
+    }
+
+    // 표시용 숫자/문자 변환 (T → 10)
+    function displayVal(v) { return v === 'T' ? '10' : v; }
+
+    // J/Q/K/A 중앙 SVG 그림 (수트 색상 적용)
+    function faceArt(value, suit) {
+        const isRed = (suit === '♥' || suit === '♦');
+        const c  = isRed ? '#c0181a' : '#111';   // 주 색상
+        const c2 = isRed ? '#e05050' : '#444';   // 보조 색상
+
+        if (value === 'J') {
+            // Jack: 깃털 달린 모자 + 얼굴 실루엣
+            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">
+  <!-- 모자 챙 -->
+  <ellipse cx="20" cy="16" rx="14" ry="4" fill="${c}" opacity="0.9"/>
+  <!-- 모자 본체 -->
+  <rect x="11" y="6" width="18" height="12" rx="3" fill="${c}"/>
+  <!-- 깃털 -->
+  <path d="M28 6 Q38 0 36 10 Q30 8 28 6Z" fill="${c2}"/>
+  <path d="M28 8 Q36 4 35 12 Q30 10 28 8Z" fill="${c}" opacity="0.5"/>
+  <!-- 얼굴 -->
+  <ellipse cx="20" cy="28" rx="8" ry="9" fill="#f5deb3"/>
+  <ellipse cx="20" cy="28" rx="8" ry="9" fill="none" stroke="${c}" stroke-width="1"/>
+  <!-- 눈 -->
+  <circle cx="17" cy="26" r="1.3" fill="${c}"/>
+  <circle cx="23" cy="26" r="1.3" fill="${c}"/>
+  <!-- 콧수염 -->
+  <path d="M16 30 Q18 32 20 30 Q22 32 24 30" stroke="${c}" stroke-width="1" fill="none"/>
+  <!-- 칼라 -->
+  <path d="M13 37 Q20 34 27 37 L25 46 Q20 43 15 46Z" fill="${c}" opacity="0.8"/>
+  <path d="M20 34 L20 44" stroke="${c2}" stroke-width="1"/>
+</svg>`;
+        }
+
+        if (value === 'Q') {
+            // Queen: 왕관 + 얼굴
+            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">
+  <!-- 왕관 -->
+  <polygon points="6,18 10,6 20,14 30,6 34,18" fill="${c}"/>
+  <circle cx="6"  cy="18" r="2.5" fill="${c2}"/>
+  <circle cx="20" cy="14" r="2.5" fill="${c2}"/>
+  <circle cx="34" cy="18" r="2.5" fill="${c2}"/>
+  <rect x="6" y="17" width="28" height="5" rx="1" fill="${c}"/>
+  <!-- 얼굴 -->
+  <ellipse cx="20" cy="30" rx="8" ry="9" fill="#f5deb3"/>
+  <ellipse cx="20" cy="30" rx="8" ry="9" fill="none" stroke="${c}" stroke-width="1"/>
+  <!-- 눈 -->
+  <path d="M15.5 28 Q17 26.5 18.5 28" stroke="${c}" stroke-width="1.2" fill="none"/>
+  <path d="M21.5 28 Q23 26.5 24.5 28" stroke="${c}" stroke-width="1.2" fill="none"/>
+  <!-- 입술 -->
+  <path d="M16.5 33 Q20 36 23.5 33" stroke="${c}" stroke-width="1.2" fill="${c2}" opacity="0.6"/>
+  <!-- 목걸이 -->
+  <ellipse cx="20" cy="41" rx="6" ry="2" fill="none" stroke="${c2}" stroke-width="1.5"/>
+  <circle cx="20" cy="43" r="1.5" fill="${c2}"/>
+</svg>`;
+        }
+
+        if (value === 'K') {
+            // King: 왕관 + 얼굴 + 홀笏
+            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">
+  <!-- 왕관 (크게) -->
+  <polygon points="4,18 9,4 20,13 31,4 36,18" fill="${c}"/>
+  <circle cx="4"  cy="18" r="2.8" fill="${c2}"/>
+  <circle cx="20" cy="12" r="2.8" fill="${c2}"/>
+  <circle cx="36" cy="18" r="2.8" fill="${c2}"/>
+  <!-- 보석 -->
+  <polygon points="20,8 22,12 20,16 18,12" fill="${c2}" opacity="0.9"/>
+  <rect x="4" y="17" width="32" height="5" rx="1.5" fill="${c}"/>
+  <!-- 얼굴 -->
+  <ellipse cx="20" cy="29" rx="8.5" ry="9" fill="#f5deb3"/>
+  <ellipse cx="20" cy="29" rx="8.5" ry="9" fill="none" stroke="${c}" stroke-width="1"/>
+  <!-- 눈썹 -->
+  <path d="M15 25.5 Q17.5 24 18.5 25.5" stroke="${c}" stroke-width="1.2" fill="none"/>
+  <path d="M21.5 25.5 Q22.5 24 25 25.5" stroke="${c}" stroke-width="1.2" fill="none"/>
+  <!-- 눈 -->
+  <circle cx="17" cy="27.5" r="1.4" fill="${c}"/>
+  <circle cx="23" cy="27.5" r="1.4" fill="${c}"/>
+  <!-- 수염 -->
+  <path d="M14 32 Q17 35 20 33 Q23 35 26 32" stroke="${c}" stroke-width="1.2" fill="${c2}" opacity="0.5"/>
+  <!-- 망토 -->
+  <path d="M12 38 Q20 35 28 38 L29 50 Q20 47 11 50Z" fill="${c}" opacity="0.75"/>
+  <line x1="20" y1="35" x2="20" y2="50" stroke="${c2}" stroke-width="1.2"/>
+</svg>`;
+        }
+
+        if (value === 'A') {
+            // Ace: 큰 수트 심볼 + 장식
+            const suitPath = {
+                '♠': `<path d="M20 6 C20 6 6 20 6 28 C6 34 12 36 20 30 C28 36 34 34 34 28 C34 20 20 6 20 6Z" fill="${c}"/>
+                       <rect x="17" y="30" width="6" height="10" fill="${c}"/>
+                       <ellipse cx="20" cy="41" rx="8" ry="2.5" fill="${c}"/>`,
+                '♥': `<path d="M20 40 C20 40 6 26 6 18 C6 12 10 8 15 8 C17.5 8 20 10 20 10 C20 10 22.5 8 25 8 C30 8 34 12 34 18 C34 26 20 40 20 40Z" fill="${c}"/>`,
+                '♦': `<polygon points="20,7 33,27 20,47 7,27" fill="${c}"/>`,
+                '♣': `<circle cx="20" cy="18" r="7" fill="${c}"/>
+                       <circle cx="13" cy="28" r="7" fill="${c}"/>
+                       <circle cx="27" cy="28" r="7" fill="${c}"/>
+                       <rect x="17" y="30" width="6" height="10" fill="${c}"/>
+                       <ellipse cx="20" cy="41" rx="8" ry="2.5" fill="${c}"/>`
+            }[suit] || '';
+            return `<svg viewBox="0 0 40 52" xmlns="http://www.w3.org/2000/svg">${suitPath}</svg>`;
+        }
+
+        return null; // 숫자 카드는 null 반환 → 기존 레이아웃 사용
+    }
+
     function getCardHTML(card, isNew) {
         if (!card) return '';
         const dealCls = isNew ? 'deal-in' : '';
 
-        // 뒷면: 'hidden' 문자열이거나 suit/value 없는 경우
+        // 뒷면
         if (card === 'hidden' || typeof card !== 'object' || !card.suit || !card.value) {
             return `<div class="card-container ${dealCls}"><div class="card-back-face"></div></div>`;
         }
 
-        // 앞면
         const colorCls = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
         const hlCls    = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
+        const dv       = displayVal(card.value);  // T → 10
+        const art      = faceArt(card.value, card.suit); // J/Q/K/A → SVG, 숫자 → null
+
+        if (art) {
+            // 그림패 (J/Q/K/A): 좌상단 값, 중앙 SVG, 우하단 값
+            return `<div class="card-container ${dealCls} ${hlCls}">
+                <div class="card-front-face ${colorCls} face-card">
+                    <div class="card-corner-tl"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
+                    <div class="card-face-art">${art}</div>
+                    <div class="card-corner-br"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
+                </div>
+            </div>`;
+        }
+
+        // 숫자패 (A는 위에서 처리, 2~10): 좌상단 값, 중앙 큰 수트, 우하단 값
         return `<div class="card-container ${dealCls} ${hlCls}">
             <div class="card-front-face ${colorCls}">
-                <div class="card-corner-tl"><span class="cv">${card.value}</span><span class="cs">${card.suit}</span></div>
+                <div class="card-corner-tl"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
                 <div class="card-suit-center">${card.suit}</div>
-                <div class="card-corner-br"><span class="cv">${card.value}</span><span class="cs">${card.suit}</span></div>
+                <div class="card-corner-br"><span class="cv">${dv}</span><span class="cs">${card.suit}</span></div>
             </div>
         </div>`;
     }
@@ -1033,7 +1266,7 @@
 
     function updateUI() {
         document.getElementById('phaseInfo').innerText = gameState.phase.toUpperCase();
-        document.getElementById('potInfo').innerText   = 'POT: ' + gameState.pot;
+        document.getElementById('potInfo').innerHTML = potChipsHTML(gameState.pot);
 
         const startBtn = document.getElementById('hostStartBtn');
         startBtn.style.display = (isHost && gameState.phase === 'waiting' && gameState.players.filter(p=>!p.hasLeft).length > 1) ? 'block' : 'none';
@@ -1099,10 +1332,16 @@
 
             let displayCards = '';
             if (p.cards && p.cards.length > 0) {
-                const isMe   = (p.token === myToken);
-                // 본인: 폴드 전까지만 앞면. 폴드하면 뒷면.
-                // 상대: showdown + wantsToShow + 폴드 안 했을 때만 앞면.
-                const canSee = (isMe && !p.folded) || (gameState.phase === 'showdown' && p.wantsToShow && !p.folded);
+                const isMe     = (p.token === myToken);
+                const iAmFolded = myData && myData.folded; // 내가 폴드했는지
+
+                // 볼 수 있는 조건:
+                // 1) 내 카드이고 내가 아직 폴드 안 함
+                // 2) showdown에서 상대가 wantsToShow했고 상대도 폴드 안 함
+                //    단, 내가 폴드했으면 상대 카드 못 봄 (게임 규칙)
+                const canSee = (isMe && !p.folded)
+                    || (!iAmFolded && gameState.phase === 'showdown' && p.wantsToShow && !p.folded);
+
                 displayCards = p.cards.map(c => {
                     const actual = (canSee && c !== 'hidden') ? c : 'hidden';
                     const isNew  = isMe && isJustDealt;
@@ -1120,18 +1359,27 @@
 
             let statusTxt  = !p.connected ? 'OFFLINE' : p.isWaiting ? 'WAITING' : '';
             let allinBadge = (p.chips === 0 && !p.folded && !p.isWaiting && p.acted) ? `<div class="allin-badge">ALL IN</div>` : '';
-            // 쇼다운 결과 표시: 이긴 경우 녹색 +, 진 경우 빨간색 -
+
+            // 칩 스택 HTML
+            const chipSize = isMeClass ? 15 : 13;
+            const chipsHtml = chipsHTML(p.chips, 4, chipSize);
+
+            // 쇼다운 결과
             let resultHtml = '';
             if (gameState.phase === 'showdown') {
                 if (p.wonAmount > 0) {
-                    resultHtml = `<br><span class="won-text">+${p.wonAmount}</span>`;
+                    resultHtml = `<div style="margin-top:2px">${chipsHTML(p.wonAmount, 3, 12)}<span class="won-text" style="display:inline;margin-left:2px">+${p.wonAmount}</span></div>`;
                 } else {
                     const prevC = preShowdownChips[p.id];
                     if (prevC !== undefined && prevC > p.chips) {
-                        resultHtml = `<br><span class="lost-text">-${prevC - p.chips}</span>`;
+                        resultHtml = `<span class="lost-text">-${prevC - p.chips}</span>`;
                     }
                 }
             }
+
+            // 베팅 칩
+            const betChips = p.bet > 0 ? chipsHTML(p.bet, 3, 12) : '';
+
             let nameStyle  = isMeClass ? '' : `background:${p.color};`;
 
             playersDiv.innerHTML += `
@@ -1140,11 +1388,11 @@
                     <div class="player-info">
                         ${statusTxt ? `<div class="status-mask">${statusTxt}</div>` : ''}
                         <div class="player-name" style="${nameStyle}">${p.name}${isLeader ? ' *' : ''}</div>
-                        <div class="player-chips">${p.chips}${resultHtml}</div>
+                        <div class="player-chips">${chipsHtml}${resultHtml}</div>
                         ${allinBadge}
                         <div class="player-timer" id="timer-${p.id}"></div>
                     </div>
-                    <div class="player-bet">${p.bet}</div>
+                    <div class="player-bet">${betChips}<span class="bet-label">${p.bet}</span></div>
                 </div>`;
         });
 
@@ -1244,5 +1492,5 @@
         toggleRaisePanel(false);
     }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0686f500c6f72d2',t:'MTc4MDU5MTgwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
