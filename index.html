@@ -173,7 +173,7 @@
             box-shadow: inset 0 0 70px rgba(0,0,0,0.5), 0 16px 50px rgba(0,0,0,0.8);
         }
         .center-area { display: flex; flex-direction: column; align-items: center; z-index: 5; }
-        .community-cards { display: flex; gap: 5px; margin-bottom: 10px; height: var(--card-h); }
+        .community-cards { display: flex; gap: 4px; margin-bottom: 10px; min-height: var(--card-h); align-items: center; }
         .pot-info {
             background: rgba(0,0,0,0.6);
             padding: 5px 18px; border-radius: 20px;
@@ -247,59 +247,76 @@
         .player.is-me .player-chips { font-size: 14px; color: var(--gold-light); }
         .player.is-me .player-cards .card-container { transform: scale(1.1); margin: 0 -8px; }
 
-        .won-text { color: #4caf7a; font-weight: 700; font-size: 11px; display: block; }
+        .won-text  { color: #4caf7a; font-weight: 700; font-size: 11px; display: block; }
+        .lost-text { color: #d94040; font-weight: 700; font-size: 11px; display: block; }
         .floating-text {
-            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
-            font-size: 16px; font-weight: 900; color: #4caf7a;
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            font-size: 15px; font-weight: 900;
             text-shadow: 0 2px 5px rgba(0,0,0,0.9);
             z-index: 100; pointer-events: none;
             animation: floatUp 2s ease-out forwards;
+            white-space: nowrap;
         }
+        .float-gain { color: #4caf7a; }
+        .float-loss { color: #d94040; }
         @keyframes floatUp {
             0%   { top: -20px; opacity: 1; transform: translateX(-50%) scale(1); }
-            100% { top: -80px; opacity: 0; transform: translateX(-50%) scale(1.4); }
+            100% { top: -75px; opacity: 0; transform: translateX(-50%) scale(1.3); }
         }
 
         /* ===================== CARDS ===================== */
         .card-container {
             width: var(--card-w); height: var(--card-h);
-            margin: 0 -10px; transform: scale(0.85);
+            margin: 0 2px;
             position: relative; display: inline-block;
+            border-radius: 6px;
+            box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
+            flex-shrink: 0;
         }
-        .card-inner {
-            width: 100%; height: 100%; position: absolute;
-            transform-style: preserve-3d; transition: transform 0.45s ease;
-        }
-        .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; -webkit-backface-visibility: hidden;
-            border-radius: 6px; display: flex; flex-direction: column;
-            justify-content: space-between; padding: 4px;
-            box-shadow: 2px 2px 6px rgba(0,0,0,0.6); font-weight: 700;
-        }
-        .card-back {
+        /* 뒷면 */
+        .card-back-face {
+            width: 100%; height: 100%;
+            border-radius: 6px;
             background: linear-gradient(135deg, #1a2a3a 25%, #0e1820 100%);
             border: 2px solid #2a4a6a;
-            transform: rotateY(0deg);
+            position: relative;
         }
-        .card-back::after {
+        .card-back-face::after {
             content: '';
             position: absolute; inset: 4px;
-            border: 1px solid rgba(80,120,160,0.3);
+            border: 1px solid rgba(80,120,160,0.25);
             border-radius: 3px;
         }
-        .card-front { background: #f8f6f0; transform: rotateY(180deg); }
-        .card-front.red { color: #b82020; }
-        .card-front.black { color: #1a1a1a; }
-        .card-top { font-size: 12px; line-height: 1; text-align: left; }
-        .card-center { font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .is-revealed .card-inner { transform: rotateY(180deg); }
-        .deal-in { animation: dealFly 0.32s ease-out forwards; }
-        @keyframes dealFly {
-            0%   { transform: translateY(-55px) scale(0.5); opacity: 0; }
-            100% { transform: translateY(0) scale(0.85); opacity: 1; }
+        /* 앞면 */
+        .card-front-face {
+            width: 100%; height: 100%;
+            border-radius: 6px;
+            background: #f8f6f0;
+            border: 1px solid #ccc;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 4px;
+            font-weight: 800;
+            position: relative;
         }
-        .highlight-card .card-front { box-shadow: 0 0 14px 4px var(--gold); border: 2px solid var(--gold); }
+        .card-front-face.red   { color: #b82020; }
+        .card-front-face.black { color: #1a1a1a; }
+        .card-val-top    { font-size: 13px; line-height: 1; text-align: left; }
+        .card-suit-mid   { font-size: 22px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .card-val-bot    { font-size: 13px; line-height: 1; text-align: right; transform: rotate(180deg); }
+
+        /* 딜 애니메이션 */
+        .deal-in { animation: dealFly 0.3s ease-out; }
+        @keyframes dealFly {
+            0%   { opacity: 0; transform: translateY(-40px) scale(0.7); }
+            100% { opacity: 1; transform: translateY(0)     scale(1); }
+        }
+
+        /* 내 카드 약간 크게 */
+        .player.is-me .player-cards .card-container { transform: scale(1.06); margin: 0 2px; }
+
+        /* 쇼다운 족보 하이라이트 */
+        .highlight-card .card-front-face { box-shadow: 0 0 12px 3px var(--gold); border: 2px solid var(--gold); }
 
         /* ===================== CONTROLS ===================== */
         .controls-wrapper {
@@ -364,7 +381,7 @@
             :root { --card-w: 42px; --card-h: 60px; }
             .player { width: 68px; }
             .player.is-me { width: 90px; }
-            .player.is-me .player-cards .card-container { transform: scale(0.9); margin: 0 -6px; }
+            .player.is-me .player-cards .card-container { transform: scale(0.95); margin: 0 1px; }
             .controls-wrapper { height: 162px; padding: 8px; }
             .action-row button { padding: 13px; font-size: 13px; }
             .raise-presets button { padding: 7px; font-size: 11px; }
@@ -658,7 +675,7 @@
         gameState.winnerMsg = ''; gameState.nextGameTime = 0; gameState.winningCards = [];
         let active = [];
         gameState.players.forEach(p => {
-            p.bet = 0; p.acted = false; p.wantsToShow = false; p.wonAmount = 0;
+            p.bet = 0; p.acted = false; p.wantsToShow = false; p.wonAmount = 0; p.lostAmount = 0;
             p.folded = (p.chips <= 0 || p.hasLeft); p.isWaiting = p.hasLeft;
             if (!p.folded) { p.cards = [gameState.deck.pop(), gameState.deck.pop()]; active.push(p); }
             else p.cards = [];
@@ -672,6 +689,7 @@
             si = gameState.players.findIndex(p => !p.folded && !p.hasLeft);
         gameState.turnIndex = si;
         gameState.turnEndTime = Date.now() + 20000;
+        lastRoundStartTime = Date.now(); // 딜 애니메이션 타이밍용
         broadcastState();
     }
 
@@ -782,6 +800,12 @@
         gameState.phase = 'showdown';
         let active = gameState.players.filter(p => !p.folded && !p.isWaiting && !p.hasLeft);
         gameState.winningCards = [];
+        // 팟에 기여한 금액 기록 (손실 계산용) - startingChips 기준이 아닌 직전 칩 기준
+        // contributed = pot 참여자의 배팅 총액. 여기서는 pot 자체가 모든 배팅의 합이므로
+        // 각 플레이어의 lostAmount = 이번 라운드에 베팅한 총액 (chips 감소분)
+        // prevChipsState는 클라이언트 측에서 처리하므로 host는 별도 계산 필요 없음
+        // winnerMsg 에 손실 정보 대신 UI에서 prevChipsState 비교로 표시
+
         if (isFoldWin && active.length > 0) {
             active[0].chips += gameState.pot; active[0].wonAmount = gameState.pot;
             active[0].wantsToShow = true; gameState.lastWinnerId = active[0].id;
@@ -857,10 +881,15 @@
         window.location.reload();
     }
 
-    let prevChipsState = {};
-    function createFloatingText(playerId, text) {
+    let prevChipsState    = {}; // 매 updateUI 직전 칩 상태
+    let preShowdownChips  = {}; // 쇼다운 직전 칩 상태 (손실 계산용)
+    let lastPhase         = '';
+
+    function createFloatingText(playerId, text, isGain) {
         let el = document.getElementById('player-' + playerId); if (!el) return;
-        let f  = document.createElement('div'); f.className = 'floating-text'; f.innerText = text;
+        let f  = document.createElement('div');
+        f.className = 'floating-text ' + (isGain ? 'float-gain' : 'float-loss');
+        f.innerText = text;
         el.appendChild(f); setTimeout(() => f.remove(), 2000);
     }
 
@@ -871,23 +900,30 @@
 
     function getCardHTML(card, isNew) {
         if (!card) return '';
-        let isRevealed = (card !== 'hidden');
-        let isHl = (gameState.phase === 'showdown' && isRevealed && isWinningCard(card)) ? 'highlight-card' : '';
-        let suitColor = (isRevealed && (card.suit === '♥' || card.suit === '♦')) ? 'red' : 'black';
-        return `<div class="card-container ${isNew ? 'deal-in' : ''}">
-            <div class="card-inner ${isRevealed ? 'is-revealed' : ''} ${isHl}">
-                <div class="card-face card-back"></div>
-                <div class="card-face card-front ${isRevealed ? suitColor : 'black'}">
-                    <div class="card-top">${isRevealed ? card.value + '<br>' + card.suit : ''}</div>
-                    <div class="card-center">${isRevealed ? card.suit : ''}</div>
-                </div>
+        const isRevealed = (card !== 'hidden');
+        const dealCls    = isNew ? 'deal-in' : '';
+        const hlCls      = (gameState.phase === 'showdown' && isRevealed && isWinningCard(card)) ? 'highlight-card' : '';
+
+        if (!isRevealed) {
+            // 뒷면
+            return `<div class="card-container ${dealCls}"><div class="card-back-face"></div></div>`;
+        }
+
+        // 앞면
+        const colorCls = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
+        return `<div class="card-container ${dealCls} ${hlCls}">
+            <div class="card-front-face ${colorCls}">
+                <div class="card-val-top">${card.value}<br>${card.suit}</div>
+                <div class="card-suit-mid">${card.suit}</div>
+                <div class="card-val-bot">${card.value}<br>${card.suit}</div>
             </div>
         </div>`;
     }
 
     let localTimerInterval = null;
-    let prevMyCardCount    = 0;
     let prevCommCardCount  = 0;
+    // 카드 딜 애니메이션: 라운드 시작 시각 기록으로 판단
+    let lastRoundStartTime = 0;
 
     function updateUI() {
         document.getElementById('phaseInfo').innerText = gameState.phase.toUpperCase();
@@ -925,13 +961,22 @@
         let myData  = valid.find(p => p.id === myId) || null;
         let maxChips = Math.max(...valid.map(p => p.chips));
 
-        let myCnt    = myData ? myData.cards.length : 0;
-        let newCards = (myCnt > 0 && prevMyCardCount === 0);
-        prevMyCardCount = myCnt;
+        // preflop 시작 직후 0.8초 이내면 새 카드 딜 애니메이션 적용
+        const isJustDealt = (gameState.phase === 'preflop') && (Date.now() - lastRoundStartTime < 800);
+
+        // showdown 진입 시 직전 칩 상태를 snapshot
+        if (gameState.phase === 'showdown' && lastPhase !== 'showdown') {
+            preShowdownChips = Object.assign({}, prevChipsState);
+        }
+        lastPhase = gameState.phase;
 
         valid.forEach((p, index) => {
-            if (prevChipsState[p.id] !== undefined && p.chips > prevChipsState[p.id])
-                setTimeout(() => createFloatingText(p.id, '+' + (p.chips - prevChipsState[p.id])), 100);
+            // 칩 변화 감지: 증가 = 획득, 감소 = 손실
+            if (prevChipsState[p.id] !== undefined) {
+                const diff = p.chips - prevChipsState[p.id];
+                if (diff > 0) setTimeout(() => createFloatingText(p.id, '+' + diff, true),  100);
+                if (diff < 0) setTimeout(() => createFloatingText(p.id, '' + diff, false), 100);
+            }
             prevChipsState[p.id] = p.chips;
 
             let shifted = (index - myIndex + total) % total;
@@ -943,10 +988,10 @@
 
             let displayCards = '';
             if (p.cards && p.cards.length > 0) {
-                let canSee = (p.id === myId) || (gameState.phase === 'showdown' && p.wantsToShow);
+                const canSee = (p.id === myId) || (gameState.phase === 'showdown' && p.wantsToShow);
                 displayCards = p.cards.map(c => {
-                    let actual = canSee ? c : 'hidden';
-                    let isNew  = (p.id === myId) ? newCards : false;
+                    const actual = canSee ? c : 'hidden';
+                    const isNew  = isJustDealt; // 방금 딜된 경우만 애니메이션
                     return getCardHTML(actual, isNew);
                 }).join('');
             }
@@ -961,7 +1006,18 @@
 
             let statusTxt  = !p.connected ? 'OFFLINE' : p.isWaiting ? 'WAITING' : '';
             let allinBadge = (p.chips === 0 && !p.folded && !p.isWaiting && p.acted) ? `<div class="allin-badge">ALL IN</div>` : '';
-            let wonHtml    = p.wonAmount > 0 ? `<br><span class="won-text">+${p.wonAmount}</span>` : '';
+            // 쇼다운 결과 표시: 이긴 경우 녹색 +, 진 경우 빨간색 -
+            let resultHtml = '';
+            if (gameState.phase === 'showdown') {
+                if (p.wonAmount > 0) {
+                    resultHtml = `<br><span class="won-text">+${p.wonAmount}</span>`;
+                } else {
+                    const prevC = preShowdownChips[p.id];
+                    if (prevC !== undefined && prevC > p.chips) {
+                        resultHtml = `<br><span class="lost-text">-${prevC - p.chips}</span>`;
+                    }
+                }
+            }
             let nameStyle  = isMeClass ? '' : `background:${p.color};`;
 
             playersDiv.innerHTML += `
@@ -970,7 +1026,7 @@
                     <div class="player-info">
                         ${statusTxt ? `<div class="status-mask">${statusTxt}</div>` : ''}
                         <div class="player-name" style="${nameStyle}">${p.name}${isLeader ? ' *' : ''}</div>
-                        <div class="player-chips">${p.chips}${wonHtml}</div>
+                        <div class="player-chips">${p.chips}${resultHtml}</div>
                         ${allinBadge}
                         <div class="player-timer" id="timer-${p.id}"></div>
                     </div>
@@ -1073,5 +1129,5 @@
         toggleRaisePanel(false);
     }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0683348fa3bc8ef',t:'MTc4MDU4OTM0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0684096de3a6995',t:'MTc4MDU4OTg5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
