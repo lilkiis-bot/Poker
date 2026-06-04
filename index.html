@@ -246,7 +246,7 @@ button:active { transform: scale(.97); filter: brightness(.88); }
 /* ── Players ── */
 .player {
   position: absolute; transform: translate(-50%,-50%);
-  width: 82px; display: flex; flex-direction: column;
+  width: var(--player-w, 82px); display: flex; flex-direction: column;
   align-items: center; z-index: 10;
 }
 .player-cards { display: flex; justify-content: center; margin-bottom: 4px; position: relative; z-index: 2; }
@@ -303,7 +303,7 @@ button:active { transform: scale(.97); filter: brightness(.88); }
   font-weight: 900; margin-top: 2px; display: inline-block;
 }
 /* Me */
-.player.is-me { z-index: 20; width: 98px; }
+.player.is-me { z-index: 20; width: calc(var(--player-w, 82px) + 16px); }
 .player.is-me .player-info { border-color: var(--blue-l); padding: 5px 6px; }
 .player.is-me .player-name { font-size: 11px; }
 .player.is-me .player-chips { font-size: 13px; color: var(--gold-l); font-weight: 900; }
@@ -450,17 +450,27 @@ button:active { transform: scale(.97); filter: brightness(.88); }
 ═══════════════════════════════════════ */
 /* 태블릿 (iPad 768px~) */
 @media (min-width: 768px) {
-  :root { --card-w: 58px; --card-h: 82px; }
-  .player { width: 90px; }
-  .player.is-me { width: 110px; }
-  .player.is-me .player-cards .card-container { transform: scale(1.1); margin: 0 3px; }
+  :root { --card-w: 54px; --card-h: 76px; }
+  .player { width: 84px; }
+  .player.is-me { width: 104px; }
+  .player.is-me .player-cards .card-container { transform: scale(1.08); margin: 0 2px; }
   .player-name { font-size: 11px; }
   .player-chips { font-size: 12px; }
-  .player.is-me .player-chips { font-size: 15px; }
-  .ctrl-wrap { min-height: 160px; padding: 12px 24px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
-  .action-row button { padding: 16px; font-size: 15px; }
-  .controls { max-width: 640px; }
-  #potChipCanvas { width: 120px; height: 60px; }
+  .player.is-me .player-chips { font-size: 14px; }
+  .ctrl-wrap { min-height: 158px; padding: 12px 24px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .action-row button { padding: 15px; font-size: 15px; }
+  .controls { max-width: 620px; }
+  #potChipCanvas { width: 110px; height: 56px; }
+}
+
+/* 아이패드 인원 많을 때 — JS로 .many-players 클래스 추가 */
+@media (min-width: 768px) {
+  .many-players .player      { width: 72px; }
+  .many-players .player.is-me{ width: 90px; }
+  .many-players :root { --card-w: 44px; --card-h: 62px; }
+  .many-players .player-name { font-size: 9px; }
+  .many-players .player-chips{ font-size: 10px; }
+  .many-players .player.is-me .player-chips { font-size: 12px; }
 }
 
 /* 모바일 (600px 이하) */
@@ -993,10 +1003,41 @@ function updateUI(){
     if(prevChipsState[p.id]!==undefined){const d=p.chips-prevChipsState[p.id];if(d>0)setTimeout(()=>createFloatingText(p.id,'+'+d,true),100);if(d<0)setTimeout(()=>createFloatingText(p.id,''+d,false),100);}
     prevChipsState[p.id]=p.chips;
 
+    // 인원 수에 따라 카드·플레이어 크기 동적 적용 (첫 번째 플레이어 렌더 전에만)
+    if (index === 0) {
+      const W2 = window.innerWidth;
+      if (W2 >= 768) {
+        // 아이패드
+        const cw = total <= 4 ? 54 : total <= 6 ? 46 : 40;
+        const ch = Math.round(cw * 1.41);
+        const pw = total <= 4 ? 84 : total <= 6 ? 74 : 66;
+        document.documentElement.style.setProperty('--card-w', cw + 'px');
+        document.documentElement.style.setProperty('--card-h', ch + 'px');
+        document.documentElement.style.setProperty('--player-w', pw + 'px');
+      } else {
+        // 모바일
+        const cw = total <= 4 ? 40 : 36;
+        const ch = Math.round(cw * 1.41);
+        document.documentElement.style.setProperty('--card-w', cw + 'px');
+        document.documentElement.style.setProperty('--card-h', ch + 'px');
+      }
+    }
+
     let shifted=(index-myIndex+total)%total;
     let angle=(shifted/total)*Math.PI*2+(Math.PI/2);
-    let isMobile=window.innerWidth<=600;
-    let rx=isMobile?44:45,ry=isMobile?37:33;
+
+    // 화면 너비에 따라 반경·플레이어 크기 동적 조정
+    const W = window.innerWidth;
+    let rx, ry;
+    if (W >= 768) {
+      // 아이패드: 플레이어 수가 많을수록 반경 확대
+      rx = total <= 4 ? 40 : total <= 6 ? 43 : 46;
+      ry = total <= 4 ? 30 : total <= 6 ? 33 : 36;
+    } else {
+      // 모바일
+      rx = total <= 4 ? 42 : 44;
+      ry = total <= 4 ? 34 : 37;
+    }
     let left=50+rx*Math.cos(angle),top=50+ry*Math.sin(angle);
 
     let displayCards='';
@@ -1102,5 +1143,5 @@ function sendAction(action,amt=null){
   toggleRaisePanel(false);
 }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a068a9c3bfa103c6',t:'MTc4MDU5NDIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a068b005be4cea1b',t:'MTc4MDU5NDQ1OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
