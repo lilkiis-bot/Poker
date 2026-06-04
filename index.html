@@ -9,13 +9,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
         :root {
-            /* 🔥 Dream Poker 퍼플 테마 */
-            --bg-color: #0d0914;
-            --table-outer: #1c142b;
-            --table-inner: #27183b;
-            --accent: #9b59b6;
+            --bg-color: #000000;
+            --table-outer: #1a5c2a;
+            --table-inner: #1e7a35;
+            --accent: #27ae60;
             --accent-gold: #f1c40f;
-            --text-main: #e0dced;
+            --text-main: #e0f0e8;
             --card-w: 52px;
             --card-h: 74px;
         }
@@ -28,23 +27,23 @@
         .active { display: flex; }
 
         /* --- Lobby --- */
-        #lobby { padding: 20px; }
-        .box { background: #150f1f; padding: 30px; border-radius: 15px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border: 1px solid #322147; text-align: center; }
-        h1 { margin-bottom: 20px; color: var(--accent-gold); font-weight: 900; font-size: 28px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
+        #lobby { padding: 20px; background: #000; }
+        .box { background: #111; padding: 30px; border-radius: 15px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border: 1px solid #27ae60; text-align: center; }
+        h1 { margin-bottom: 20px; color: var(--accent-gold); font-weight: 900; font-size: 28px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
         .input-group { display: flex; gap: 8px; margin: 8px 0; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: none; background: #221833; color: white; border-radius: 8px; font-size: 14px; text-align: center; outline: none; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #333; background: #1a1a1a; color: white; border-radius: 8px; font-size: 14px; text-align: center; outline: none; }
         input:focus { border: 1px solid var(--accent); }
         button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.1s; color: white; }
-        .btn-host { background: #8e44ad; }
-        .btn-join { background: #2980b9; }
+        .btn-host { background: #1a7a3a; }
+        .btn-join { background: #1565c0; }
         button:active { transform: scale(0.97); }
 
         /* --- Game Layout --- */
-        #game { justify-content: space-between; position: relative; }
+        #game { justify-content: space-between; position: relative; background: #000; }
         
-        .header { width: 100%; height: 45px; padding: 0 15px; display: flex; justify-content: space-between; z-index: 10; font-weight: bold; font-size: 13px; color: #aaa; align-items: center; background: rgba(0,0,0,0.7); border-bottom: 1px solid #222;}
-        .top-btn { background: #333; border: 1px solid #555; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; color: white; width: auto; margin: 0; }
+        .header { width: 100%; height: 45px; padding: 0 15px; display: flex; justify-content: space-between; z-index: 10; font-weight: bold; font-size: 13px; color: #aaa; align-items: center; background: rgba(0,0,0,0.9); border-bottom: 1px solid #1a5c2a;}
+        .top-btn { background: #222; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; color: white; width: auto; margin: 0; }
         
         #winnerBanner { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: black; padding: 6px 15px; border-radius: 20px; font-weight: 900; font-size: 12px; z-index: 50; display: none; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); white-space: pre-wrap; min-width: 200px;}
 
@@ -54,22 +53,22 @@
         .poker-table {
             position: absolute; width: 92%; height: 80%; background: var(--table-inner);
             border: 12px solid var(--table-outer); border-radius: 140px;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6);
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.6), 0 15px 40px rgba(0,0,0,0.8);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
         .center-area { display: flex; flex-direction: column; align-items: center; z-index: 5; }
-        .community-cards { display: flex; gap: 5px; margin-bottom: 10px; height: var(--card-h); perspective: 1000px; }
-        .pot-info { background: rgba(0,0,0,0.8); padding: 6px 20px; border-radius: 20px; font-weight: 900; color: white; font-size: 14px; border: 1px solid #555; }
+        .community-cards { display: flex; gap: 5px; margin-bottom: 10px; height: var(--card-h); }
+        .pot-info { background: rgba(0,0,0,0.75); padding: 6px 20px; border-radius: 20px; font-weight: 900; color: white; font-size: 14px; border: 1px solid #27ae60; }
 
         /* --- Players --- */
-        .player { position: absolute; transform: translate(-50%, -50%); width: 80px; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.3s ease; }
-        .player-cards { display: flex; justify-content: center; gap: -15px; margin-bottom: 5px; z-index: 2; position: relative; perspective: 1000px;}
+        .player { position: absolute; transform: translate(-50%, -50%); width: 80px; display: flex; flex-direction: column; align-items: center; z-index: 10; }
+        .player-cards { display: flex; justify-content: center; gap: -15px; margin-bottom: 5px; z-index: 2; position: relative; }
         
         .player-info { background: #111; border: 2px solid #333; width: 100%; padding: 4px; border-radius: 8px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; z-index: 1; }
         
-        .player.active-turn .player-info { border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .player.chip-leader .player-info { border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+        .player.active-turn .player-info { border-color: #f1c40f; box-shadow: 0 0 15px rgba(241,196,15,0.8); }
+        .player.chip-leader .player-info { border-color: var(--accent-gold); box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
         .player.folded { opacity: 0.5; filter: grayscale(60%); }
         .player.disconnected { filter: grayscale(100%); opacity: 0.4; }
         
@@ -77,16 +76,16 @@
         .player-chips { font-size: 12px; color: #fff; font-weight: 900; margin-top: 2px; }
         .player-timer { font-size: 10px; color: #ff4757; font-weight: bold; margin-top: 1px; min-height: 12px; }
         
-        .player-bet { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 8px; font-size: 11px; color: white; border: 1px solid var(--accent); display: none; z-index: 5; }
+        .player-bet { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 2px 8px; border-radius: 8px; font-size: 11px; color: white; border: 1px solid #27ae60; display: none; z-index: 5; }
         .has-bet .player-bet { display: block; }
         
-        .status-mask { position: absolute; inset: 0; background: rgba(0,0,0,0.8); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #aaa; text-align: center; display: none; z-index: 10; }
-        .player.waiting .status-mask { display: flex; content: "WAITING"; }
+        .status-mask { position: absolute; inset: 0; background: rgba(0,0,0,0.8); border-radius: 6px; display: none; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #aaa; text-align: center; z-index: 10; }
+        .player.waiting .status-mask { display: flex; }
         .allin-badge { background: #e74c3c; color: white; font-size: 9px; padding: 1px 4px; border-radius: 4px; font-weight: bold; margin-top: 2px; display: inline-block;}
         
         /* 🔥 본인(Me) 전용 강조 */
         .player.is-me { z-index: 20; width: 100px; }
-        .player.is-me .player-info { border-width: 2px; padding: 6px; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        .player.is-me .player-info { border-color: #27ae60; border-width: 2px; padding: 6px; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
         .player.is-me .player-name { font-size: 13px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .player.is-me .player-chips { font-size: 14px; color: var(--accent-gold); }
         .player.is-me .player-cards .card-container { transform: scale(1.1); margin: 0 -8px; }
@@ -95,12 +94,16 @@
         .floating-text { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); font-size: 18px; font-weight: 900; color: #2ecc71; text-shadow: 0 2px 5px rgba(0,0,0,1); z-index: 100; pointer-events: none; animation: floatUp 2s ease-out forwards; }
         @keyframes floatUp { 0% { top: -20px; opacity: 1; transform: translateX(-50%) scale(1); } 100% { top: -80px; opacity: 0; transform: translateX(-50%) scale(1.5); } }
 
-        /* --- 🔥 완벽한 3D Flip & Deal 카드 애니메이션 --- */
-        .card-container { width: var(--card-w); height: var(--card-h); margin: 0 -10px; transform: scale(0.8); position: relative; }
-        .card-inner { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* --- 카드 스타일 (모션 최소화) --- */
+        .card-container { width: var(--card-w); height: var(--card-h); margin: 0 -10px; transform: scale(0.85); position: relative; display: inline-block; }
+        .card-inner { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.5s ease; }
         
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; padding: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-weight: bold; }
-        .card-back { background: repeating-linear-gradient(45deg, #1c1126, #1c1126 5px, #0e0714 5px, #0e0714 10px); border: 2px solid #fff; transform: rotateY(0deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; padding: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-weight: bold; }
+        .card-back { 
+            background: repeating-linear-gradient(45deg, #0a3d1a, #0a3d1a 5px, #052210 5px, #052210 10px); 
+            border: 2px solid #27ae60; 
+            transform: rotateY(0deg); 
+        }
         .card-front { background: white; transform: rotateY(180deg); }
         .card-front.red { color: #d00000; }
         .card-front.black { color: #111; }
@@ -111,39 +114,71 @@
         /* 앞면 공개 상태 */
         .is-revealed .card-inner { transform: rotateY(180deg); }
         
-        /* 딜링 (위에서 꽂히는 모션) */
-        .deal-in { animation: dealFly 0.4s ease-out forwards; }
-        @keyframes dealFly { 0% { transform: translateY(-80px) scale(0.4); opacity: 0; } 100% { transform: translateY(0) scale(0.8); opacity: 1; } }
+        /* 딜링 애니메이션 */
+        .deal-in { animation: dealFly 0.35s ease-out forwards; }
+        @keyframes dealFly { 0% { transform: translateY(-60px) scale(0.5); opacity: 0; } 100% { transform: translateY(0) scale(0.85); opacity: 1; } }
 
         /* 족보 하이라이트 */
-        .highlight-card .card-front { box-shadow: 0 0 15px 5px var(--accent-gold); border: 2px solid var(--accent-gold); z-index: 5; }
+        .highlight-card .card-front { box-shadow: 0 0 15px 5px var(--accent-gold); border: 2px solid var(--accent-gold); }
 
-        /* --- Fixed Controls Area (흔들림 방지) --- */
-        .controls-wrapper { width: 100%; height: 170px; display: flex; justify-content: center; padding: 10px; background: #08060c; border-top: 1px solid #1f112e; z-index: 20; position: relative; }
+        /* --- 🟢 호스트 스타트 버튼 (중앙 크게) --- */
+        #hostStartBtn {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            padding: 18px 40px;
+            border-radius: 14px;
+            border: 3px solid #2ecc71;
+            box-shadow: 0 0 30px rgba(39,174,96,0.6), 0 8px 25px rgba(0,0,0,0.6);
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+            width: auto;
+            margin: 0;
+            white-space: nowrap;
+        }
+        #hostStartBtn:hover { background: linear-gradient(135deg, #2ecc71, #27ae60); box-shadow: 0 0 40px rgba(46,204,113,0.8); }
+        #hostStartBtn:active { transform: translate(-50%, -50%) scale(0.96); }
+
+        /* --- Fixed Controls Area --- */
+        .controls-wrapper { width: 100%; height: 170px; display: flex; justify-content: center; padding: 10px; background: #0a0a0a; border-top: 2px solid #1a5c2a; z-index: 20; position: relative; }
         
-        .controls-mask { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8,6,12, 0.85); z-index: 25; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--accent); letter-spacing: 1px; }
+        .controls-mask { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 25; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #27ae60; letter-spacing: 1px; }
 
         .controls { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
         
         .action-row { display: flex; gap: 10px; width: 100%; }
         .action-row button { flex: 1; margin: 0; padding: 16px; font-size: 15px; border-radius: 10px;}
+
+        /* 액션 버튼 명시적 색상 */
+        #btnFold { background: #555 !important; color: #fff !important; }
+        #btnFold:hover { background: #666 !important; }
+        #btnCall { background: #1565c0 !important; color: #fff !important; }
+        .btn-raise { background: #e67e22 !important; color: #fff !important; }
         
         /* Raise Area */
-        #raisePanel { display: none; flex-direction: column; gap: 10px; background: #181124; padding: 12px; border-radius: 10px; border: 1px solid #322147; width: 100%; }
+        #raisePanel { display: none; flex-direction: column; gap: 10px; background: #111; padding: 12px; border-radius: 10px; border: 1px solid #27ae60; width: 100%; }
         .raise-presets { display: flex; gap: 6px; }
-        .raise-presets button { flex: 1; margin: 0; padding: 8px; font-size: 12px; background: #291b38; border-radius: 6px; }
+        .raise-presets button { flex: 1; margin: 0; padding: 8px; font-size: 12px; background: #1a5c2a; color: white; border-radius: 6px; }
         .slider-container { display: flex; align-items: center; gap: 10px; }
         .slider-container input[type="range"] { flex: 1; accent-color: var(--accent-gold); }
         .slider-val { font-size: 16px; font-weight: bold; color: var(--accent-gold); min-width: 60px; text-align: right; }
         .raise-confirm-row { display: flex; gap: 8px; }
-        .btn-confirm-raise { flex: 2; background: var(--accent-gold) !important; color: black !important; margin:0; padding: 12px;}
-        .btn-cancel-raise { flex: 1; background: #555 !important; margin:0; padding: 12px;}
+        .btn-confirm-raise { flex: 2; background: var(--accent-gold) !important; color: black !important; margin:0; padding: 12px; font-weight: 900; }
+        .btn-cancel-raise { flex: 1; background: #444 !important; color: white !important; margin:0; padding: 12px; }
 
         #showMuckPanel { display: none; gap: 10px; width: 100%; }
-        #showMuckPanel button { flex: 1; margin: 0; padding: 16px; font-size: 14px; border-radius: 10px;}
+        #showMuckPanel button { flex: 1; margin: 0; padding: 16px; font-size: 14px; border-radius: 10px; }
+        .btn-muck { background: #444 !important; color: #fff !important; }
+        .btn-show { background: #1565c0 !important; color: #fff !important; }
 
-        #btnLeave { background: #c0392b; display: none; width: 100%; padding: 16px; margin: 0; border-radius: 10px;}
-        #hostStartBtn { display: none; position: absolute; top: 8px; right: 100px; background: #198754; width: auto; padding: 6px 12px; border-radius: 5px; font-weight: bold; border: none; color: white; cursor: pointer; z-index: 30; font-size:11px; }
+        #btnLeave { background: #c0392b; display: none; width: 100%; padding: 16px; margin: 0; border-radius: 10px; color: white; }
 
         @media (max-width: 600px) {
             .poker-table { border-width: 8px; border-radius: 80px; }
@@ -153,12 +188,13 @@
             .player.is-me .player-info { padding: 4px; }
             .player.is-me .player-name { font-size: 11px; }
             .player.is-me .player-chips { font-size: 13px; }
-            .player.is-me .player-cards .card-container { transform: scale(0.85); margin: 0 -6px; }
+            .player.is-me .player-cards .card-container { transform: scale(0.9); margin: 0 -6px; }
             .controls-wrapper { height: 165px; padding: 8px; }
             .action-row button { padding: 14px; font-size: 13px; }
             .raise-presets button { padding: 8px; font-size: 11px; }
             .slider-val { font-size: 14px; }
             .btn-confirm-raise, .btn-cancel-raise { padding: 10px; font-size: 13px; }
+            #hostStartBtn { font-size: 16px; padding: 14px 28px; }
         }
     </style>
 </head>
@@ -166,18 +202,18 @@
 
     <div id="lobby" class="view active">
         <div class="box">
-            <h1>DREAM POKER</h1>
-            <input type="text" id="playerName" placeholder="Nickname (Leave empty)">
-            <hr style="border:0; height:1px; background:#333; margin: 15px 0;">
+            <h1>🃏 DREAM POKER</h1>
+            <input type="text" id="playerName" placeholder="Nickname (Leave empty for random)">
+            <hr style="border:0; height:1px; background:#27ae60; margin: 15px 0; opacity:0.4;">
             <p style="font-size:12px; color:#aaa; text-align:left; margin-bottom:5px;">Host Settings (Create Room):</p>
             <div class="input-group">
                 <input type="number" id="startChips" placeholder="Chips" value="5000">
                 <input type="number" id="baseBet" placeholder="Base Bet" value="100">
             </div>
-            <button class="btn-host" onclick="createRoom()">CREATE ROOM</button>
-            <p style="margin:15px 0; color:#555; font-size:12px;">OR</p>
-            <input type="text" id="roomCode" placeholder="Enter 4-Digit Code" maxlength="4">
-            <button class="btn-join" onclick="joinRoom()">JOIN ROOM</button>
+            <button class="btn-host" onclick="createRoom()">🏠 CREATE ROOM</button>
+            <p style="margin:15px 0; color:#555; font-size:12px;">— OR —</p>
+            <input type="text" id="roomCode" placeholder="Enter 4-Digit Room Code" maxlength="4">
+            <button class="btn-join" onclick="joinRoom()">🚀 JOIN ROOM</button>
             <p id="statusMsg" style="margin-top: 15px; color: #dc3545; font-weight:bold; font-size: 14px;"></p>
         </div>
     </div>
@@ -189,7 +225,8 @@
         </div>
         
         <div id="winnerBanner">Winner MSG</div>
-        <button id="hostStartBtn" onclick="hostStartGame()">Start Game</button>
+        <!-- 스타트 버튼: 중앙 크게 -->
+        <button id="hostStartBtn" onclick="hostStartGame()">🎮 START GAME</button>
 
         <div class="table-container">
             <div class="poker-table"></div>
@@ -207,9 +244,9 @@
                 <button id="btnLeave" onclick="leaveRoom()">🚪 LEAVE GAME (BANKRUPT)</button>
                 
                 <div class="action-row" id="mainActions">
-                    <button class="btn-gray" id="btnFold" onclick="sendAction('fold')">FOLD</button>
-                    <button class="btn-join" onclick="sendAction('check_call')" id="btnCall">CHECK</button>
-                    <button style="background: #e67e22;" onclick="toggleRaisePanel(true)">RAISE ⬆</button>
+                    <button id="btnFold" onclick="sendAction('fold')">FOLD</button>
+                    <button id="btnCall" onclick="sendAction('check_call')">CHECK</button>
+                    <button class="btn-raise" onclick="toggleRaisePanel(true)">RAISE ⬆</button>
                 </div>
 
                 <div id="raisePanel">
@@ -217,7 +254,7 @@
                         <button onclick="setRaisePreset(0.1)">1/10</button>
                         <button onclick="setRaisePreset(0.25)">1/4</button>
                         <button onclick="setRaisePreset(0.5)">1/2</button>
-                        <button onclick="setRaisePreset(1)" style="background: #c0392b;">ALL IN</button>
+                        <button onclick="setRaisePreset(1)" style="background: #c0392b !important;">ALL IN</button>
                     </div>
                     <div class="slider-container">
                         <input type="range" id="raiseSlider" min="0" max="100" step="10" value="0" oninput="updateRaiseDisplay()">
@@ -225,13 +262,13 @@
                     </div>
                     <div class="raise-confirm-row">
                         <button class="btn-cancel-raise" onclick="toggleRaisePanel(false)">CANCEL</button>
-                        <button class="btn-confirm-raise" onclick="confirmRaise()">CONFIRM RAISE</button>
+                        <button class="btn-confirm-raise" onclick="confirmRaise()">✅ CONFIRM RAISE</button>
                     </div>
                 </div>
 
                 <div class="action-row" id="showMuckPanel">
-                    <button class="btn-gray" onclick="sendShowMuck('muck')">MUCK (Hide)</button>
-                    <button style="background: #3498db;" onclick="sendShowMuck('show')">SHOW HAND 👁️</button>
+                    <button class="btn-muck" onclick="sendShowMuck('muck')">🙈 MUCK (Hide)</button>
+                    <button class="btn-show" onclick="sendShowMuck('show')">👁️ SHOW HAND</button>
                 </div>
             </div>
         </div>
@@ -250,10 +287,9 @@
     let gameState = {}; 
 
     let customRaiseAmount = 0; 
-    let knownCardsCounts = { comm: 0, me: 0 }; 
 
-    // 🔥 플레이어 고유 색상 배열
-    const PLAYER_COLORS = ['#9b59b6', '#3498db', '#e67e22', '#e74c3c', '#1abc9c', '#f1c40f', '#d35400', '#2980b9'];
+    // 플레이어 고유 색상 배열
+    const PLAYER_COLORS = ['#27ae60', '#3498db', '#e67e22', '#e74c3c', '#1abc9c', '#f1c40f', '#d35400', '#2980b9'];
 
     const peerConfig = {
         pingInterval: 5000,
@@ -272,7 +308,6 @@
             players: [], winningCards: [], winnerMsg: '', nextGameTime: 0
         };
         document.getElementById('communityCards').innerHTML = ''; 
-        knownCardsCounts = { comm: 0, me: 0 };
     }
 
     const suits = [{s:'♠', c:'black'}, {s:'♥', c:'red'}, {s:'♦', c:'red'}, {s:'♣', c:'black'}];
@@ -359,14 +394,13 @@
             let connIdx = connections.findIndex(c => c.peer === clientId);
             if(connIdx === -1) connections.push(conn); else connections[connIdx] = conn;
 
-            // 🔥 패치: 토큰이 다르더라도 닉네임이 같고 연결끊긴 유저가 있으면 덮어씌움 (복제 완벽 방지)
             let existingPlayer = gameState.players.find(p => p.token === data.token) || gameState.players.find(p => p.name === data.name && !p.connected);
             
             let joinedName = data.name || `Player ${Math.floor(Math.random()*1000)}`;
 
             if (existingPlayer) {
                 existingPlayer.id = clientId; 
-                existingPlayer.token = data.token; // 토큰 갱신
+                existingPlayer.token = data.token;
                 existingPlayer.name = joinedName; 
                 existingPlayer.connected = true;
                 existingPlayer.hasLeft = false;
@@ -637,11 +671,11 @@
         } else if(active.length > 0) {
             let bestScore = -1; let winners = [];
             active.forEach(p => {
-                let eval = evaluateHand([...p.cards, ...gameState.communityCards]);
-                p.handName = eval.name;
-                p.winningCards = eval.winningCards;
-                if(eval.score > bestScore) { bestScore = eval.score; winners = [p]; }
-                else if(eval.score === bestScore) { winners.push(p); }
+                let evalResult = evaluateHand([...p.cards, ...gameState.communityCards]);
+                p.handName = evalResult.name;
+                p.winningCards = evalResult.winningCards;
+                if(evalResult.score > bestScore) { bestScore = evalResult.score; winners = [p]; }
+                else if(evalResult.score === bestScore) { winners.push(p); }
             });
             let splitAmount = Math.floor(gameState.pot / winners.length);
             
@@ -703,19 +737,20 @@
         return gameState.winningCards.some(wc => wc.suit === card.suit && wc.value === card.value);
     }
 
-    // 🔥 완벽한 3D CSS 플립 (애니메이션 리플레이 없음)
-    function getCardHTML(card, isNew = false) {
+    // 카드 HTML 생성 - 모션 단순화
+    function getCardHTML(card, isNew) {
         if(!card) return '';
         let isRevealed = (card !== 'hidden');
         let isHl = (gameState.phase === 'showdown' && isRevealed && isWinningCard(card)) ? 'highlight-card' : '';
         let dealClass = isNew ? 'deal-in' : '';
         let stateClass = isRevealed ? 'is-revealed' : '';
+        let suitColor = (isRevealed && (card.suit === '♥' || card.suit === '♦')) ? 'red' : 'black';
 
         return `
             <div class="card-container ${dealClass}">
                 <div class="card-inner ${stateClass} ${isHl}">
                     <div class="card-face card-back"></div>
-                    <div class="card-face card-front ${isRevealed && (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black'}">
+                    <div class="card-face card-front ${isRevealed ? suitColor : 'black'}">
                         <div class="card-top">${isRevealed ? card.value + '<br>' + card.suit : ''}</div>
                         <div class="card-center">${isRevealed ? card.suit : ''}</div>
                     </div>
@@ -724,6 +759,9 @@
     }
 
     let localTimerInterval = null;
+    // 이전 카드 상태 추적 (내 카드가 처음에 안 보이는 문제 해결)
+    let prevMyCardCount = 0;
+    let prevCommCardCount = 0;
 
     function updateUI() {
         document.getElementById('phaseInfo').innerText = `PHASE: ${gameState.phase.toUpperCase()}`;
@@ -736,18 +774,28 @@
         if (gameState.phase === 'showdown') banner.style.display = 'block';
         else banner.style.display = 'none';
 
-        // 중앙 카드 렌더링 (리렌더링 방지)
+        // 커뮤니티 카드 렌더링
+        // showdown에서는 하이라이트를 위해 항상 재렌더, 그 외엔 새 카드만 추가
         const commDiv = document.getElementById('communityCards');
-        if (commDiv.children.length !== gameState.communityCards.length || gameState.phase === 'showdown') {
+        const commCount = gameState.communityCards.length;
+        if (gameState.phase === 'waiting' || gameState.phase === 'preflop') {
+            // 새 라운드 시작: 초기화
+            if (commDiv.children.length > 0) commDiv.innerHTML = '';
+            prevCommCardCount = 0;
+        } else if (gameState.phase === 'showdown') {
+            // showdown: 하이라이트 적용을 위해 재렌더
             let html = '';
-            gameState.communityCards.forEach((c, i) => {
-                let isNew = i >= knownCardsCounts.comm;
-                html += getCardHTML(c, isNew);
-            });
+            gameState.communityCards.forEach(c => { html += getCardHTML(c, false); });
             commDiv.innerHTML = html;
-            knownCardsCounts.comm = gameState.communityCards.length;
+        } else if (commCount > prevCommCardCount) {
+            // 새 커뮤니티 카드만 추가
+            for (let i = prevCommCardCount; i < commCount; i++) {
+                let wrapper = document.createElement('div');
+                wrapper.innerHTML = getCardHTML(gameState.communityCards[i], true);
+                commDiv.appendChild(wrapper.firstElementChild);
+            }
+            prevCommCardCount = commCount;
         }
-        if (gameState.phase === 'waiting' || gameState.phase === 'preflop') knownCardsCounts.comm = 0;
 
         const playersDiv = document.getElementById('playersList');
         playersDiv.innerHTML = '';
@@ -759,6 +807,11 @@
         let myData = validPlayers.find(p => p.id === myId) || null;
 
         let maxChips = Math.max(...validPlayers.map(p => p.chips));
+
+        // 내 카드 수 변경 감지
+        let myCurrentCardCount = myData ? myData.cards.length : 0;
+        let myCardsAreNew = (myCurrentCardCount > 0 && prevMyCardCount === 0);
+        prevMyCardCount = myCurrentCardCount;
 
         validPlayers.forEach((p, index) => {
             if(prevChipsState[p.id] !== undefined && p.chips > prevChipsState[p.id]) {
@@ -777,9 +830,12 @@
             let displayCards = '';
             if(p.cards && p.cards.length > 0) {
                 let canSee = (p.id === myId) || (gameState.phase === 'showdown' && p.wantsToShow);
+                // 내 카드: 처음 받을 때만 딜 애니메이션, 이후엔 그냥 보여줌
+                // 다른 플레이어 카드: 항상 뒷면
                 displayCards = p.cards.map(c => {
                     let actualCard = canSee ? c : 'hidden';
-                    let isNew = (gameState.phase === 'preflop'); 
+                    // 내 카드가 새로 받은 경우에만 deal-in 애니메이션
+                    let isNew = (p.id === myId) ? myCardsAreNew : false;
                     return getCardHTML(actualCard, isNew);
                 }).join('');
             }
@@ -799,7 +855,6 @@
             let allinBadge = (p.chips === 0 && !p.folded && !p.isWaiting && p.acted) ? `<div class="allin-badge">ALL IN</div>` : '';
             let wonTextHtml = p.wonAmount > 0 ? `<br><span class="won-text">(+${p.wonAmount})</span>` : '';
             
-            // 고유 닉네임 컬러 적용
             let nameColor = isMeClass ? '' : `background-color: ${p.color};`;
 
             playersDiv.innerHTML += `
@@ -817,7 +872,7 @@
             `;
         });
 
-        // 🔥 컨트롤 UI 로직 (흔들림 없는 고정형)
+        // 컨트롤 UI 업데이트
         const ctrlMask = document.getElementById('controlsMask');
         const mainActions = document.getElementById('mainActions');
         const raisePanel = document.getElementById('raisePanel');
@@ -830,13 +885,12 @@
         let amIActive = (myData && !myData.folded && !myData.isWaiting && !myData.hasLeft && myData.chips > 0);
         let isPlayingPhase = (gameState.phase !== 'waiting' && gameState.phase !== 'showdown');
 
-        // 전체 버튼 끄고 마스크 활성화
         ctrlMask.style.display = 'flex';
         mainActions.style.display = 'none';
         showMuckPanel.style.display = 'none';
         btnLeave.style.display = 'none';
 
-        if(gameState.phase === 'showdown' && myData && !myData.wantsToShow && !myData.hasLeft && myData.cards.length > 0) {
+        if(gameState.phase === 'showdown' && myData && !myData.wantsToShow && !myData.hasLeft && myData.cards && myData.cards.length > 0) {
             ctrlMask.style.display = 'none';
             showMuckPanel.style.display = 'flex';
             raisePanel.style.display = 'none';
@@ -851,10 +905,14 @@
             if(raisePanel.style.display !== 'flex') mainActions.style.display = 'flex'; 
             
             const callAmount = gameState.currentBet - myData.bet;
-            if(callAmount > 0) { btnCall.innerText = `CALL ${callAmount}`; btnCall.style.background = '#dc3545'; } 
-            else { btnCall.innerText = 'CHECK'; btnCall.style.background = '#0d6efd'; }
+            if(callAmount > 0) { 
+                btnCall.innerText = `CALL ${callAmount}`; 
+                btnCall.style.background = '#dc3545'; 
+            } else { 
+                btnCall.innerText = 'CHECK'; 
+                btnCall.style.background = '#1565c0'; 
+            }
             
-            // 10단위 강제 슬라이더
             document.getElementById('raiseSlider').max = Math.floor(myData.chips / 10) * 10;
         } else {
             raisePanel.style.display = 'none';
@@ -863,19 +921,19 @@
         if(!localTimerInterval) {
             localTimerInterval = setInterval(() => {
                 if(gameState.phase === 'showdown') {
-                    let left = Math.ceil((gameState.nextGameTime - Date.now())/1000);
-                    if(left < 0) left = 0;
-                    if(banner) banner.innerText = `${gameState.winnerMsg}\nNext round in ${left}s...`;
+                    let remaining = Math.ceil((gameState.nextGameTime - Date.now())/1000);
+                    if(remaining < 0) remaining = 0;
+                    if(banner) banner.innerText = `${gameState.winnerMsg}\nNext round in ${remaining}s...`;
                 }
                 
                 document.querySelectorAll('.player-timer').forEach(el => el.innerText = ''); 
                 if(gameState.phase !== 'waiting' && gameState.phase !== 'showdown' && gameState.turnEndTime > 0) {
-                    let left = Math.ceil((gameState.turnEndTime - Date.now())/1000);
-                    if(left < 0) left = 0;
+                    let remaining = Math.ceil((gameState.turnEndTime - Date.now())/1000);
+                    if(remaining < 0) remaining = 0;
                     let currP = gameState.players[gameState.turnIndex];
                     if(currP) {
                         let timerDiv = document.getElementById('timer-' + currP.id);
-                        if(timerDiv) timerDiv.innerText = `⏳ ${left}s`;
+                        if(timerDiv) timerDiv.innerText = `⏳ ${remaining}s`;
                     }
                 }
             }, 500);
@@ -888,7 +946,7 @@
         if(show) {
             let p = gameState.players.find(x => x.id === myId);
             customRaiseAmount = gameState.currentBet === 0 ? gameState.baseBet : gameState.currentBet * 2;
-            customRaiseAmount = Math.floor(customRaiseAmount / 10) * 10; // 10단위 정렬
+            customRaiseAmount = Math.floor(customRaiseAmount / 10) * 10;
             if (customRaiseAmount > p.chips) customRaiseAmount = p.chips;
             document.getElementById('raiseSlider').value = customRaiseAmount;
             updateRaiseDisplay();
@@ -905,7 +963,7 @@
         if(!p) return;
         
         if (fraction === 1) {
-            customRaiseAmount = p.chips; // 올인은 10단위 무시하고 탈탈 털기
+            customRaiseAmount = p.chips;
         } else {
             customRaiseAmount = Math.floor((p.chips * fraction) / 10) * 10;
             if(customRaiseAmount <= 0) customRaiseAmount = p.chips > 0 ? 10 : 0;
@@ -943,5 +1001,5 @@
         toggleRaisePanel(false);
     }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a06825d4a97dea93',t:'MTc4MDU4ODc5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
