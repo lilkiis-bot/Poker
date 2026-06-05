@@ -34,7 +34,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; user-select: none; }
         body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* --- Views --- */
         .view { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
 
@@ -86,7 +85,6 @@
         /* ===================== GAME LAYOUT ===================== */
         #game { justify-content: space-between; position: relative; background: var(--bg); }
 
-        /* Header */
         .header {
             width: 100%; height: 48px; padding: 0 14px;
             display: flex; justify-content: space-between; align-items: center;
@@ -105,7 +103,6 @@
             margin-left: 6px;
         }
 
-        /* Edit Name Button - header right */
         .btn-edit-name {
             background: var(--slate);
             border: 1px solid var(--slate-light);
@@ -120,7 +117,6 @@
         }
         .btn-edit-name:hover { background: var(--slate-light); }
 
-        /* Rename inline modal */
         #renameModal {
             display: none;
             position: absolute;
@@ -147,7 +143,6 @@
         #renameSave { background: var(--gold); color: #111; font-weight: 900; }
         #renameCancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
-        /* Winner Banner */
         #winnerBanner {
             position: absolute; top: 58px; left: 50%; transform: translateX(-50%);
             background: var(--gold); color: #111;
@@ -186,7 +181,14 @@
             letter-spacing: 0.5px;
         }
 
-        /* ===================== START BUTTON ===================== */
+        /* ===================== START OVERLAY + BUTTON ===================== */
+        #startOverlay {
+            display: none;
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 95;
+            pointer-events: auto;
+        }
         #hostStartBtn {
             display: none;
             position: absolute; top: 50%; left: 50%;
@@ -244,12 +246,11 @@
             font-size: 9px; padding: 1px 4px; border-radius: 3px;
             font-weight: 900; margin-top: 2px; display: inline-block;
         }
-        /* Me */
         .player.is-me { z-index: 20; width: 100px; }
         .player.is-me .player-info { border-color: var(--blue-light); border-width: 2px; padding: 6px; }
         .player.is-me .player-name { font-size: 12px; }
         .player.is-me .player-chips { font-size: 14px; color: var(--gold-light); }
-        .player.is-me .player-cards .card-container { transform: scale(1.1); margin: 0 -8px; }
+        .player.is-me .player-cards .card-slot { transform: scale(1.15); }
 
         .won-text  { color: #4caf7a; font-weight: 700; font-size: 11px; display: block; }
         .lost-text { color: #d94040; font-weight: 700; font-size: 11px; display: block; }
@@ -268,65 +269,26 @@
             100% { top: -75px; opacity: 0; transform: translateX(-50%) scale(1.3); }
         }
 
-        /* ===================== CARDS ===================== */
-        .card-container {
-            width: var(--card-w); height: var(--card-h);
-            margin: 0 2px;
-            position: relative; display: inline-block;
-            border-radius: 6px;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
+        /* ===================== CARDS — 유니코드 only ===================== */
+        .card-slot {
+            display: inline-block;
+            margin: 0 -4px;
             flex-shrink: 0;
-        }
-        /* 뒷면 */
-        .card-back-face {
-            width: 100%; height: 100%;
-            border-radius: 6px;
-            background: linear-gradient(135deg, #1a3a6a 0%, #0e1e3a 100%);
-            border: 2px solid #3a5a9a;
-            position: relative;
-            overflow: hidden;
-        }
-        .card-back-face::before {
-            content: '';
-            position: absolute; inset: 4px;
-            border: 1px solid rgba(100,140,200,0.3);
-            border-radius: 3px;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 3px,
-                rgba(80,120,180,0.08) 3px,
-                rgba(80,120,180,0.08) 6px
-            );
-        }
-        .card-back-face::after {
-            content: '🂠';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 28px;
-            opacity: 0.4;
-        }
-
-        /* 앞면 - 유니코드 트럼프 카드 */
-        .card-front-face {
-            width: 100%; height: 100%;
-            border-radius: 6px;
-            background: #fffef8;
-            border: 1.5px solid #bbb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .card-front-face .unicode-card {
-            font-size: 64px;
             line-height: 1;
-            margin-top: -2px;
         }
-        .card-front-face.red .unicode-card   { color: #cc1111; }
-        .card-front-face.black .unicode-card { color: #1a1a1a; }
+        .card-slot .unicode-char {
+            font-size: 62px;
+            display: block;
+            filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.6));
+        }
+        .card-slot .unicode-char.red   { color: #cc1111; }
+        .card-slot .unicode-char.black { color: #1a1a1a; }
+        .card-slot .unicode-char.back  { color: #2a5090; }
+
+        /* 쇼다운 하이라이트 */
+        .card-slot.highlight-card .unicode-char {
+            filter: drop-shadow(0 0 8px rgba(240,204,112,0.9)) drop-shadow(0 0 3px rgba(201,169,74,0.7));
+        }
 
         /* 딜 애니메이션 */
         .deal-in { animation: dealFly 0.3s ease-out; }
@@ -334,12 +296,6 @@
             0%   { opacity: 0; transform: translateY(-40px) scale(0.7); }
             100% { opacity: 1; transform: translateY(0)     scale(1); }
         }
-
-        /* 내 카드 약간 크게 */
-        .player.is-me .player-cards .card-container { transform: scale(1.06); margin: 0 2px; }
-
-        /* 쇼다운 족보 하이라이트 */
-        .highlight-card .card-front-face { box-shadow: 0 0 12px 3px var(--gold); border: 2px solid var(--gold); }
 
         /* ===================== CONTROLS ===================== */
         .controls-wrapper {
@@ -359,7 +315,6 @@
         .action-row { display: flex; gap: 8px; width: 100%; }
         .action-row button { flex: 1; margin: 0; padding: 15px; font-size: 14px; border-radius: 9px; letter-spacing: 0.5px; }
 
-        /* Action button colors */
         #btnFold   { background: var(--slate);      color: var(--text) !important; }
         #btnFold:hover { background: var(--slate-light); }
         #btnCall   { background: var(--blue);       color: #fff !important; }
@@ -367,7 +322,6 @@
         .btn-raise { background: var(--orange);     color: #fff !important; }
         .btn-raise:hover { background: var(--orange-light); }
 
-        /* Raise panel */
         #raisePanel {
             display: none; flex-direction: column; gap: 8px;
             background: var(--surface2); padding: 12px;
@@ -387,7 +341,6 @@
         .btn-confirm-raise { flex: 2; background: var(--gold) !important; color: #111 !important; margin:0; padding: 11px; font-weight: 900; border-radius: 8px; }
         .btn-cancel-raise  { flex: 1; background: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border) !important; margin:0; padding: 11px; border-radius: 8px; }
 
-        /* Show/Muck panel */
         #showMuckPanel { display: none; gap: 8px; width: 100%; }
         #showMuckPanel button { flex: 1; margin: 0; padding: 15px; font-size: 13px; border-radius: 9px; letter-spacing: 0.5px; }
         .btn-muck { background: var(--slate)  !important; color: var(--text) !important; }
@@ -395,23 +348,22 @@
 
         #btnLeave { background: var(--red); display: none; width: 100%; padding: 15px; margin: 0; border-radius: 9px; color: #fff; letter-spacing: 0.5px; }
 
-        /* ===================== STATUS MSG ===================== */
         #statusMsg { margin-top: 14px; color: var(--red-light); font-weight: 700; font-size: 13px; min-height: 18px; }
 
         /* ===================== RESPONSIVE ===================== */
         @media (max-width: 600px) {
             .poker-table { border-width: 10px; border-radius: 80px; }
-            :root { --card-w: 38px; --card-h: 54px; }
             .player { width: 68px; }
             .player.is-me { width: 90px; }
-            .player.is-me .player-cards .card-container { transform: scale(0.95); margin: 0 1px; }
+            .player.is-me .player-cards .card-slot { transform: scale(1.0); }
+            .card-slot .unicode-char { font-size: 50px; }
+            .card-slot { margin: 0 -3px; }
             .controls-wrapper { height: 162px; padding: 8px; }
             .action-row button { padding: 13px; font-size: 13px; }
             .raise-presets button { padding: 7px; font-size: 11px; }
             .slider-val { font-size: 13px; }
             .btn-confirm-raise, .btn-cancel-raise { padding: 10px; font-size: 12px; }
             #hostStartBtn { font-size: 15px; padding: 13px 28px; }
-            .card-front-face .unicode-card { font-size: 52px; }
         }
     </style>
 </head>
@@ -440,7 +392,6 @@
 <!-- ========== GAME ========== -->
 <div id="game" class="view">
 
-    <!-- Header -->
     <div class="header">
         <div class="header-left">
             <span id="roomInfo">ROOM: ----</span>
@@ -449,7 +400,6 @@
         <button class="btn-edit-name" onclick="toggleRenameModal()">EDIT NAME</button>
     </div>
 
-    <!-- Inline Rename Modal -->
     <div id="renameModal">
         <p>Change Nickname</p>
         <input type="text" id="renameInput" placeholder="New name..." maxlength="15">
@@ -460,6 +410,9 @@
     </div>
 
     <div id="winnerBanner"></div>
+
+    <!-- ★ 어두운 오버레이 + 스타트 버튼 -->
+    <div id="startOverlay"></div>
     <button id="hostStartBtn" onclick="hostStartGame()">START GAME</button>
 
     <div class="table-container">
@@ -545,26 +498,17 @@
     const suits  = [{s:'♠',c:'black'},{s:'♥',c:'red'},{s:'♦',c:'red'},{s:'♣',c:'black'}];
     const values = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
 
-    /* 카드 값 → 표시용 변환 */
-    function displayValue(v) {
-        if (v === 'T') return '10';
-        return v;
-    }
-
     /*
-     * 유니코드 Playing Cards 매핑 (U+1F0A1 ~ U+1F0DE)
-     * 스페이드: 0x1F0A0 + offset
-     * 하트:     0x1F0B0 + offset
-     * 다이아몬드: 0x1F0C0 + offset
-     * 클럽:     0x1F0D0 + offset
-     * offset: A=1, 2=2, ..., T=10, J=11, (Knight=12 건너뜀), Q=13, K=14
+     * 유니코드 Playing Cards 매핑
+     * 스페이드: 0x1F0A0, 하트: 0x1F0B0, 다이아몬드: 0x1F0C0, 클럽: 0x1F0D0
+     * offset: A=1, 2=2, ..., T=10, J=11, (Knight=12 skip), Q=13, K=14
      */
     function getUnicodeCard(suit, value) {
         const suitBase = { '♠': 0x1F0A0, '♥': 0x1F0B0, '♦': 0x1F0C0, '♣': 0x1F0D0 };
         const valOffset = { 'A':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':13,'K':14 };
         const base = suitBase[suit];
         const off  = valOffset[value];
-        if (base === undefined || off === undefined) return '🂠';
+        if (base === undefined || off === undefined) return '\u{1F0A0}';
         return String.fromCodePoint(base + off);
     }
 
@@ -741,8 +685,13 @@
     }
 
     function processAction(playerId, action, amount) {
-        let player = gameState.players.find(p => p.id === playerId);
-        if (!player || player.folded || player.chips === 0 || player.hasLeft) return;
+        let pi = gameState.players.findIndex(p => p.id === playerId);
+        if (pi === -1) return;
+        let player = gameState.players[pi];
+        if (player.folded || player.chips === 0 || player.hasLeft) return;
+        /* ★ 턴이 아닌 사람의 액션은 무시 */
+        if (pi !== gameState.turnIndex) return;
+
         if (action === 'fold') {
             player.acted = true; player.folded = true;
         } else if (action === 'check_call') {
@@ -776,15 +725,18 @@
     }
 
     function advanceTurn() {
-        for (let i = 0; i < gameState.players.length; i++) {
-            gameState.turnIndex = (gameState.turnIndex + 1) % gameState.players.length;
-            let p = gameState.players[gameState.turnIndex];
-            if (!p.folded && !p.isWaiting && !p.hasLeft && p.chips > 0) {
-                if (p.acted && p.bet === gameState.currentBet) continue;
+        let total = gameState.players.length;
+        for (let i = 1; i <= total; i++) {
+            let idx = (gameState.turnIndex + i) % total;
+            let p = gameState.players[idx];
+            if (!p.folded && !p.isWaiting && !p.hasLeft && p.chips > 0 && !p.acted) {
+                gameState.turnIndex = idx;
                 gameState.turnEndTime = Date.now() + 20000;
-                broadcastState(); return;
+                broadcastState();
+                return;
             }
         }
+        /* 모든 사람이 acted → 다음 페이즈 */
         nextPhase();
     }
 
@@ -795,12 +747,27 @@
         else if (gameState.phase === 'flop')    { gameState.phase = 'turn';  gameState.communityCards.push(gameState.deck.pop()); }
         else if (gameState.phase === 'turn')    { gameState.phase = 'river'; gameState.communityCards.push(gameState.deck.pop()); }
         else if (gameState.phase === 'river')   { handleShowdown(false); return; }
+
+        /* ★ 새 페이즈 시작 시: lastWinnerId 기준으로 첫 유효 플레이어 찾기 */
         let si = gameState.players.findIndex(p => p.id === gameState.lastWinnerId);
         if (si === -1 || gameState.players[si].folded || gameState.players[si].hasLeft)
             si = gameState.players.findIndex(p => !p.folded && !p.hasLeft);
-        gameState.turnIndex = si;
-        if (gameState.players[si].folded || gameState.players[si].chips === 0) advanceTurn();
-        else { gameState.turnEndTime = Date.now() + 20000; broadcastState(); }
+
+        /* si부터 시작해서 첫 번째 플레이 가능한 사람 찾기 */
+        let total = gameState.players.length;
+        for (let i = 0; i < total; i++) {
+            let idx = (si + i) % total;
+            let p = gameState.players[idx];
+            if (!p.folded && !p.isWaiting && !p.hasLeft && p.chips > 0) {
+                gameState.turnIndex = idx;
+                gameState.turnEndTime = Date.now() + 20000;
+                broadcastState();
+                return;
+            }
+        }
+        /* 모두 올인 상태 → 바로 다음 페이즈 */
+        broadcastState();
+        nextPhase();
     }
 
     const valMap = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':12,'K':13,'A':14};
@@ -850,8 +817,6 @@
 
         if (isFoldWin && active.length > 0) {
             active[0].chips += gameState.pot; active[0].wonAmount = gameState.pot;
-            /* ★ 수정: 폴드 승리 시 승자의 카드를 공개하지 않음 */
-            /* active[0].wantsToShow = true; — 제거됨 */
             gameState.lastWinnerId = active[0].id;
             gameState.winnerMsg = `${active[0].name} wins ${gameState.pot}\nFold win`;
         } else if (active.length > 0) {
@@ -876,7 +841,6 @@
         setTimeout(() => { if (isHost) hostStartGame(); }, 15000);
     }
 
-    /* ---- Rename (inline modal) ---- */
     function toggleRenameModal() {
         const modal = document.getElementById('renameModal');
         const isOpen = modal.classList.contains('open');
@@ -940,26 +904,22 @@
         return gameState.winningCards.some(wc => wc.suit === card.suit && wc.value === card.value);
     }
 
-    /* ★ 유니코드 트럼프 카드 문자 사용 */
+    /* ★ 카드 HTML — 유니코드 문자만! 배경 도형 없음 */
     function getCardHTML(card, isNew) {
         if (!card) return '';
         const dealCls = isNew ? 'deal-in' : '';
 
-        // 뒷면: 🂠 (U+1F0A0)
+        // 뒷면 🂠
         if (card === 'hidden' || typeof card !== 'object' || !card.suit || !card.value) {
-            return `<div class="card-container ${dealCls}"><div class="card-back-face"></div></div>`;
+            return `<div class="card-slot ${dealCls}"><span class="unicode-char back">\u{1F0A0}</span></div>`;
         }
 
-        // 앞면: 유니코드 카드 문자
-        const colorCls    = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
-        const hlCls       = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
-        const unicodeChar = getUnicodeCard(card.suit, card.value);
+        // 앞면
+        const colorCls = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
+        const hlCls    = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
+        const ch       = getUnicodeCard(card.suit, card.value);
 
-        return `<div class="card-container ${dealCls} ${hlCls}">
-            <div class="card-front-face ${colorCls}">
-                <span class="unicode-card">${unicodeChar}</span>
-            </div>
-        </div>`;
+        return `<div class="card-slot ${dealCls} ${hlCls}"><span class="unicode-char ${colorCls}">${ch}</span></div>`;
     }
 
     let localTimerInterval = null;
@@ -970,8 +930,12 @@
         document.getElementById('phaseInfo').innerText = gameState.phase.toUpperCase();
         document.getElementById('potInfo').innerText   = 'POT: ' + gameState.pot;
 
+        /* ★ 스타트 버튼 + 어두운 오버레이 */
         const startBtn = document.getElementById('hostStartBtn');
-        startBtn.style.display = (isHost && gameState.phase === 'waiting' && gameState.players.filter(p=>!p.hasLeft).length > 1) ? 'block' : 'none';
+        const startOverlay = document.getElementById('startOverlay');
+        const showStart = isHost && gameState.phase === 'waiting' && gameState.players.filter(p=>!p.hasLeft).length > 1;
+        startBtn.style.display     = showStart ? 'block' : 'none';
+        startOverlay.style.display = showStart ? 'block' : 'none';
 
         const banner = document.getElementById('winnerBanner');
         banner.style.display = gameState.phase === 'showdown' ? 'block' : 'none';
@@ -1029,14 +993,11 @@
 
             let displayCards = '';
             if (p.cards && p.cards.length > 0) {
-                /* ★ 핵심 수정: 호스트의 updateUI에서도 카드 가시성을 올바르게 처리 */
                 const isMe   = (p.token === myToken);
                 let canSee;
                 if (isHost) {
-                    /* 호스트: 자기 자신이거나, showdown에서 wantsToShow인 경우만 카드 공개 */
                     canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
                 } else {
-                    /* 클라이언트: 서버에서 이미 필터링된 데이터를 받으므로 그대로 표시 */
                     canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
                 }
                 displayCards = p.cards.map(c => {
@@ -1178,5 +1139,5 @@
         toggleRaisePanel(false);
     }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0706957fb160d9b',t:'MTc4MDY3NTQ0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a07079ded93c16dd',t:'MTc4MDY3NjEyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
