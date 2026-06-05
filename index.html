@@ -27,8 +27,6 @@
             --orange-light:#d47030;
             --text:        #d8d4c8;
             --text-dim:    #7a7870;
-            --card-w:      48px;
-            --card-h:      68px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; user-select: none; }
@@ -43,7 +41,7 @@
             background: var(--surface);
             padding: 32px 28px;
             border-radius: 12px;
-            width: 100%; max-width: 380px;
+            width: 100%; max-width: 420px;
             box-shadow: 0 12px 40px rgba(0,0,0,0.8);
             border: 1px solid var(--border);
             text-align: center;
@@ -51,27 +49,27 @@
         h1 {
             margin-bottom: 24px;
             color: var(--gold-light);
-            font-weight: 900; font-size: 26px; letter-spacing: 3px;
+            font-weight: 900; font-size: 28px; letter-spacing: 3px;
             text-transform: uppercase;
         }
         .lobby-divider { border: 0; height: 1px; background: var(--border); margin: 18px 0; }
-        .lobby-label { font-size: 11px; color: var(--text-dim); text-align: left; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .lobby-label { font-size: 12px; color: var(--text-dim); text-align: left; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
         .input-group { display: flex; gap: 8px; margin: 8px 0; }
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="text"], input[type="number"] {
-            width: 100%; padding: 12px;
+            width: 100%; padding: 14px;
             border: 1px solid var(--border);
             background: var(--surface2);
             color: var(--text);
-            border-radius: 7px; font-size: 14px; text-align: center; outline: none;
+            border-radius: 7px; font-size: 16px; text-align: center; outline: none;
             transition: border-color 0.15s;
         }
         input:focus { border-color: var(--gold); }
         button {
-            width: 100%; padding: 12px; margin: 6px 0;
+            width: 100%; padding: 14px; margin: 6px 0;
             border: none; border-radius: 8px;
-            font-size: 14px; font-weight: 700; cursor: pointer;
+            font-size: 15px; font-weight: 700; cursor: pointer;
             transition: filter 0.1s, transform 0.1s;
             color: #fff;
         }
@@ -80,7 +78,7 @@
         .btn-host:hover { filter: brightness(1.15); }
         .btn-join { background: var(--blue); letter-spacing: 1px; }
         .btn-join:hover { filter: brightness(1.15); }
-        .or-divider { margin: 14px 0; color: var(--text-dim); font-size: 12px; }
+        .or-divider { margin: 14px 0; color: var(--text-dim); font-size: 13px; }
 
         /* ===================== GAME LAYOUT ===================== */
         #game { justify-content: space-between; position: relative; background: var(--bg); }
@@ -91,16 +89,16 @@
             background: var(--surface); border-bottom: 1px solid #3b1f0a;
             z-index: 10;
         }
-        .header-left { font-size: 12px; color: var(--text-dim); font-weight: 500; letter-spacing: 0.5px; }
-        .header-left span { color: var(--text); font-weight: 700; }
+        .header-left { font-size: 14px; color: var(--text-dim); font-weight: 500; letter-spacing: 0.5px; }
+        .header-left span { color: var(--gold-light); font-weight: 900; font-size: 16px; }
         .phase-badge {
             display: inline-block;
             background: var(--slate);
             color: var(--gold-light);
-            font-size: 10px; font-weight: 900;
-            padding: 2px 8px; border-radius: 4px;
+            font-size: 11px; font-weight: 900;
+            padding: 3px 10px; border-radius: 4px;
             letter-spacing: 1px;
-            margin-left: 6px;
+            margin-left: 8px;
         }
 
         .btn-edit-name {
@@ -143,22 +141,26 @@
         #renameSave { background: var(--gold); color: #111; font-weight: 900; }
         #renameCancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
+        /* ★ 승리 알림 — 작고 반투명, 상단에 고정, 다른 요소 안가림 */
         #winnerBanner {
-            position: absolute; top: 58px; left: 50%; transform: translateX(-50%);
-            background: var(--gold); color: #111;
-            padding: 7px 18px; border-radius: 6px;
-            font-weight: 900; font-size: 12px; z-index: 50;
+            position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
+            background: rgba(180,140,40,0.75); color: #fff;
+            padding: 5px 14px; border-radius: 6px;
+            font-weight: 700; font-size: 11px; z-index: 50;
             display: none; text-align: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-            white-space: pre-wrap; min-width: 200px;
-            letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            white-space: pre-wrap; min-width: 160px; max-width: 280px;
+            letter-spacing: 0.3px;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         /* ===================== TABLE ===================== */
         .table-container {
             flex: 1; position: relative; width: 100%; max-width: 900px;
             display: flex; align-items: center; justify-content: center;
-            margin: 8px auto; overflow: hidden;
+            margin: 4px auto; overflow: hidden;
         }
         .poker-table {
             position: absolute; width: 92%; height: 80%;
@@ -172,12 +174,12 @@
                 0 16px 50px rgba(0,0,0,0.9);
         }
         .center-area { display: flex; flex-direction: column; align-items: center; z-index: 5; }
-        .community-cards { display: flex; gap: 4px; margin-bottom: 10px; min-height: var(--card-h); align-items: center; }
+        .community-cards { display: flex; gap: 2px; margin-bottom: 8px; min-height: 70px; align-items: center; }
         .pot-info {
             background: rgba(0,0,0,0.6);
             padding: 5px 18px; border-radius: 20px;
             font-weight: 900; color: var(--gold-light);
-            font-size: 13px; border: 1px solid rgba(201,169,74,0.4);
+            font-size: 14px; border: 1px solid rgba(201,169,74,0.4);
             letter-spacing: 0.5px;
         }
 
@@ -187,7 +189,6 @@
             position: absolute; inset: 0;
             background: rgba(0,0,0,0.75);
             z-index: 95;
-            pointer-events: auto;
         }
         #hostStartBtn {
             display: none;
@@ -213,7 +214,7 @@
             width: 80px; display: flex; flex-direction: column;
             align-items: center; z-index: 10;
         }
-        .player-cards { display: flex; justify-content: center; margin-bottom: 5px; z-index: 2; position: relative; }
+        .player-cards { display: flex; justify-content: center; margin-bottom: 4px; z-index: 2; position: relative; }
         .player-info {
             background: #111; border: 2px solid #2a2a2a;
             width: 100%; padding: 4px; border-radius: 8px;
@@ -250,7 +251,7 @@
         .player.is-me .player-info { border-color: var(--blue-light); border-width: 2px; padding: 6px; }
         .player.is-me .player-name { font-size: 12px; }
         .player.is-me .player-chips { font-size: 14px; color: var(--gold-light); }
-        .player.is-me .player-cards .card-slot { transform: scale(1.15); }
+        .player.is-me .player-cards .card-slot { transform: scale(1.12); }
 
         .won-text  { color: #4caf7a; font-weight: 700; font-size: 11px; display: block; }
         .lost-text { color: #d94040; font-weight: 700; font-size: 11px; display: block; }
@@ -269,40 +270,83 @@
             100% { top: -75px; opacity: 0; transform: translateX(-50%) scale(1.3); }
         }
 
-        /* ===================== CARDS — 유니코드 only ===================== */
+        /* ===================== CARDS ===================== */
         .card-slot {
             display: inline-block;
-            margin: 0 -4px;
+            position: relative;
+            margin: 0 -2px;
             flex-shrink: 0;
             line-height: 1;
         }
+        /* 유니코드 카드 뒤 배경 도형 — 카드 모양에 딱 맞게 */
+        .card-bg {
+            position: absolute;
+            top: 12%; left: 8%; right: 8%; bottom: 8%;
+            border-radius: 5px;
+            z-index: 0;
+        }
+        .card-bg.bg-front {
+            background: rgba(255,255,250,0.92);
+            box-shadow: 1px 2px 6px rgba(0,0,0,0.5);
+        }
+        .card-bg.bg-back {
+            background: linear-gradient(135deg, #1a3a6a, #0e1e3a);
+            border: 1.5px solid #3a5a9a;
+            box-shadow: 1px 2px 6px rgba(0,0,0,0.5);
+        }
         .card-slot .unicode-char {
-            font-size: 62px;
+            font-size: 72px;
             display: block;
-            filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.6));
+            position: relative;
+            z-index: 1;
         }
         .card-slot .unicode-char.red   { color: #cc1111; }
-        .card-slot .unicode-char.black { color: #1a1a1a; }
+        .card-slot .unicode-char.black { color: #222; }
         .card-slot .unicode-char.back  { color: #2a5090; }
 
-        /* 쇼다운 하이라이트 */
         .card-slot.highlight-card .unicode-char {
-            filter: drop-shadow(0 0 8px rgba(240,204,112,0.9)) drop-shadow(0 0 3px rgba(201,169,74,0.7));
+            filter: drop-shadow(0 0 6px rgba(240,204,112,0.9));
+        }
+        .card-slot.highlight-card .card-bg {
+            box-shadow: 0 0 10px 2px rgba(240,204,112,0.7);
         }
 
-        /* 딜 애니메이션 */
         .deal-in { animation: dealFly 0.3s ease-out; }
         @keyframes dealFly {
             0%   { opacity: 0; transform: translateY(-40px) scale(0.7); }
             100% { opacity: 1; transform: translateY(0)     scale(1); }
         }
 
-        /* ===================== CONTROLS ===================== */
+        /* ===================== CONTROLS — 리사이즈 가능 ===================== */
         .controls-wrapper {
-            width: 100%; height: 170px;
-            display: flex; justify-content: center; padding: 10px;
+            width: 100%;
+            min-height: 80px;
+            max-height: 300px;
+            height: 120px;
+            display: flex; flex-direction: column;
             background: var(--surface); border-top: 1px solid #3b1f0a;
             z-index: 20; position: relative;
+            overflow: hidden;
+        }
+        /* 드래그 핸들 */
+        .resize-handle {
+            width: 100%; height: 18px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: ns-resize;
+            flex-shrink: 0;
+            background: var(--surface);
+            touch-action: none;
+        }
+        .resize-handle::after {
+            content: '';
+            width: 40px; height: 4px;
+            background: #444; border-radius: 2px;
+        }
+        .controls-inner {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            padding: 4px 10px 10px;
+            overflow: hidden;
+            position: relative;
         }
         .controls-mask {
             position: absolute; inset: 0;
@@ -311,9 +355,9 @@
             font-size: 13px; font-weight: 700; color: var(--text-dim); letter-spacing: 1.5px;
             text-transform: uppercase;
         }
-        .controls { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+        .controls { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
         .action-row { display: flex; gap: 8px; width: 100%; }
-        .action-row button { flex: 1; margin: 0; padding: 15px; font-size: 14px; border-radius: 9px; letter-spacing: 0.5px; }
+        .action-row button { flex: 1; margin: 0; padding: 13px; font-size: 14px; border-radius: 9px; letter-spacing: 0.5px; }
 
         #btnFold   { background: var(--slate);      color: var(--text) !important; }
         #btnFold:hover { background: var(--slate-light); }
@@ -323,32 +367,32 @@
         .btn-raise:hover { background: var(--orange-light); }
 
         #raisePanel {
-            display: none; flex-direction: column; gap: 8px;
-            background: var(--surface2); padding: 12px;
+            display: none; flex-direction: column; gap: 6px;
+            background: var(--surface2); padding: 10px;
             border-radius: 10px; border: 1px solid var(--border); width: 100%;
         }
         .raise-presets { display: flex; gap: 6px; }
         .raise-presets button {
-            flex: 1; margin: 0; padding: 8px; font-size: 12px;
+            flex: 1; margin: 0; padding: 7px; font-size: 12px;
             background: var(--slate); color: var(--text); border-radius: 6px;
         }
         .raise-presets button:hover { background: var(--slate-light); }
         .raise-preset-allin { background: var(--red) !important; color: #fff !important; }
         .slider-container { display: flex; align-items: center; gap: 10px; }
         .slider-container input[type="range"] { flex: 1; accent-color: var(--gold); }
-        .slider-val { font-size: 15px; font-weight: 900; color: var(--gold-light); min-width: 60px; text-align: right; }
+        .slider-val { font-size: 14px; font-weight: 900; color: var(--gold-light); min-width: 50px; text-align: right; }
         .raise-confirm-row { display: flex; gap: 8px; }
-        .btn-confirm-raise { flex: 2; background: var(--gold) !important; color: #111 !important; margin:0; padding: 11px; font-weight: 900; border-radius: 8px; }
-        .btn-cancel-raise  { flex: 1; background: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border) !important; margin:0; padding: 11px; border-radius: 8px; }
+        .btn-confirm-raise { flex: 2; background: var(--gold) !important; color: #111 !important; margin:0; padding: 10px; font-weight: 900; border-radius: 8px; }
+        .btn-cancel-raise  { flex: 1; background: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border) !important; margin:0; padding: 10px; border-radius: 8px; }
 
         #showMuckPanel { display: none; gap: 8px; width: 100%; }
-        #showMuckPanel button { flex: 1; margin: 0; padding: 15px; font-size: 13px; border-radius: 9px; letter-spacing: 0.5px; }
+        #showMuckPanel button { flex: 1; margin: 0; padding: 13px; font-size: 13px; border-radius: 9px; letter-spacing: 0.5px; }
         .btn-muck { background: var(--slate)  !important; color: var(--text) !important; }
         .btn-show { background: var(--blue)   !important; color: #fff !important; }
 
-        #btnLeave { background: var(--red); display: none; width: 100%; padding: 15px; margin: 0; border-radius: 9px; color: #fff; letter-spacing: 0.5px; }
+        #btnLeave { background: var(--red); display: none; width: 100%; padding: 13px; margin: 0; border-radius: 9px; color: #fff; letter-spacing: 0.5px; }
 
-        #statusMsg { margin-top: 14px; color: var(--red-light); font-weight: 700; font-size: 13px; min-height: 18px; }
+        #statusMsg { margin-top: 14px; color: var(--red-light); font-weight: 700; font-size: 14px; min-height: 18px; }
 
         /* ===================== RESPONSIVE ===================== */
         @media (max-width: 600px) {
@@ -356,14 +400,22 @@
             .player { width: 68px; }
             .player.is-me { width: 90px; }
             .player.is-me .player-cards .card-slot { transform: scale(1.0); }
-            .card-slot .unicode-char { font-size: 50px; }
+            .card-slot .unicode-char { font-size: 58px; }
             .card-slot { margin: 0 -3px; }
-            .controls-wrapper { height: 162px; padding: 8px; }
-            .action-row button { padding: 13px; font-size: 13px; }
-            .raise-presets button { padding: 7px; font-size: 11px; }
+            .controls-wrapper { height: 100px; min-height: 60px; }
+            .action-row button { padding: 11px; font-size: 13px; }
+            .raise-presets button { padding: 6px; font-size: 11px; }
             .slider-val { font-size: 13px; }
-            .btn-confirm-raise, .btn-cancel-raise { padding: 10px; font-size: 12px; }
+            .btn-confirm-raise, .btn-cancel-raise { padding: 9px; font-size: 12px; }
             #hostStartBtn { font-size: 15px; padding: 13px 28px; }
+        }
+
+        @media (min-width: 768px) {
+            .card-slot .unicode-char { font-size: 80px; }
+            .header-left { font-size: 15px; }
+            .header-left span { font-size: 18px; }
+            .phase-badge { font-size: 12px; padding: 3px 12px; }
+            .pot-info { font-size: 16px; }
         }
     </style>
 </head>
@@ -411,7 +463,6 @@
 
     <div id="winnerBanner"></div>
 
-    <!-- ★ 어두운 오버레이 + 스타트 버튼 -->
     <div id="startOverlay"></div>
     <button id="hostStartBtn" onclick="hostStartGame()">START GAME</button>
 
@@ -424,44 +475,77 @@
         <div id="playersList"></div>
     </div>
 
-    <div class="controls-wrapper">
-        <div id="controlsMask" class="controls-mask">WAITING FOR OTHERS</div>
-
-        <div class="controls" id="actionPanel">
-            <button id="btnLeave" onclick="leaveRoom()">LEAVE GAME</button>
-
-            <div class="action-row" id="mainActions">
-                <button id="btnFold" onclick="sendAction('fold')">FOLD</button>
-                <button id="btnCall" onclick="sendAction('check_call')">CHECK</button>
-                <button class="btn-raise" onclick="toggleRaisePanel(true)">RAISE</button>
-            </div>
-
-            <div id="raisePanel">
-                <div class="raise-presets">
-                    <button onclick="setRaisePreset(0.1)">1/10</button>
-                    <button onclick="setRaisePreset(0.25)">1/4</button>
-                    <button onclick="setRaisePreset(0.5)">1/2</button>
-                    <button class="raise-preset-allin" onclick="setRaisePreset(1)">ALL IN</button>
+    <div class="controls-wrapper" id="controlsWrapper">
+        <div class="resize-handle" id="resizeHandle"></div>
+        <div class="controls-inner">
+            <div id="controlsMask" class="controls-mask">WAITING FOR OTHERS</div>
+            <div class="controls" id="actionPanel">
+                <button id="btnLeave" onclick="leaveRoom()">LEAVE GAME</button>
+                <div class="action-row" id="mainActions">
+                    <button id="btnFold" onclick="sendAction('fold')">FOLD</button>
+                    <button id="btnCall" onclick="sendAction('check_call')">CHECK</button>
+                    <button class="btn-raise" onclick="toggleRaisePanel(true)">RAISE</button>
                 </div>
-                <div class="slider-container">
-                    <input type="range" id="raiseSlider" min="0" max="100" step="10" value="0" oninput="updateRaiseDisplay()">
-                    <div class="slider-val" id="raiseDisplay">0</div>
+                <div id="raisePanel">
+                    <div class="raise-presets">
+                        <button onclick="setRaisePreset(0.1)">1/10</button>
+                        <button onclick="setRaisePreset(0.25)">1/4</button>
+                        <button onclick="setRaisePreset(0.5)">1/2</button>
+                        <button class="raise-preset-allin" onclick="setRaisePreset(1)">ALL IN</button>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="raiseSlider" min="0" max="100" step="10" value="0" oninput="updateRaiseDisplay()">
+                        <div class="slider-val" id="raiseDisplay">0</div>
+                    </div>
+                    <div class="raise-confirm-row">
+                        <button class="btn-cancel-raise" onclick="toggleRaisePanel(false)">CANCEL</button>
+                        <button class="btn-confirm-raise" onclick="confirmRaise()">CONFIRM RAISE</button>
+                    </div>
                 </div>
-                <div class="raise-confirm-row">
-                    <button class="btn-cancel-raise" onclick="toggleRaisePanel(false)">CANCEL</button>
-                    <button class="btn-confirm-raise" onclick="confirmRaise()">CONFIRM RAISE</button>
+                <div class="action-row" id="showMuckPanel">
+                    <button class="btn-muck" onclick="sendShowMuck('muck')">MUCK (Hide)</button>
+                    <button class="btn-show" onclick="sendShowMuck('show')">SHOW HAND</button>
                 </div>
-            </div>
-
-            <div class="action-row" id="showMuckPanel">
-                <button class="btn-muck" onclick="sendShowMuck('muck')">MUCK (Hide)</button>
-                <button class="btn-show" onclick="sendShowMuck('show')">SHOW HAND</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    /* ===================== 조작창 리사이즈 드래그 ===================== */
+    (function() {
+        const wrapper = document.getElementById('controlsWrapper');
+        const handle  = document.getElementById('resizeHandle');
+        let dragging = false, startY = 0, startH = 0;
+
+        function onStart(e) {
+            dragging = true;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            startH = wrapper.offsetHeight;
+            document.body.style.cursor = 'ns-resize';
+            e.preventDefault();
+        }
+        function onMove(e) {
+            if (!dragging) return;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            const diff = startY - y;
+            let newH = Math.max(60, Math.min(300, startH + diff));
+            wrapper.style.height = newH + 'px';
+        }
+        function onEnd() {
+            dragging = false;
+            document.body.style.cursor = '';
+        }
+
+        handle.addEventListener('mousedown', onStart);
+        handle.addEventListener('touchstart', onStart, { passive: false });
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchend', onEnd);
+    })();
+
+    /* ===================== GAME LOGIC ===================== */
     let myToken = localStorage.getItem('pkr_token');
     if (!myToken) {
         myToken = Math.random().toString(36).substring(2) + Date.now();
@@ -498,11 +582,6 @@
     const suits  = [{s:'♠',c:'black'},{s:'♥',c:'red'},{s:'♦',c:'red'},{s:'♣',c:'black'}];
     const values = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
 
-    /*
-     * 유니코드 Playing Cards 매핑
-     * 스페이드: 0x1F0A0, 하트: 0x1F0B0, 다이아몬드: 0x1F0C0, 클럽: 0x1F0D0
-     * offset: A=1, 2=2, ..., T=10, J=11, (Knight=12 skip), Q=13, K=14
-     */
     function getUnicodeCard(suit, value) {
         const suitBase = { '♠': 0x1F0A0, '♥': 0x1F0B0, '♦': 0x1F0C0, '♣': 0x1F0D0 };
         const valOffset = { 'A':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'T':10,'J':11,'Q':13,'K':14 };
@@ -689,7 +768,6 @@
         if (pi === -1) return;
         let player = gameState.players[pi];
         if (player.folded || player.chips === 0 || player.hasLeft) return;
-        /* ★ 턴이 아닌 사람의 액션은 무시 */
         if (pi !== gameState.turnIndex) return;
 
         if (action === 'fold') {
@@ -736,7 +814,6 @@
                 return;
             }
         }
-        /* 모든 사람이 acted → 다음 페이즈 */
         nextPhase();
     }
 
@@ -748,12 +825,10 @@
         else if (gameState.phase === 'turn')    { gameState.phase = 'river'; gameState.communityCards.push(gameState.deck.pop()); }
         else if (gameState.phase === 'river')   { handleShowdown(false); return; }
 
-        /* ★ 새 페이즈 시작 시: lastWinnerId 기준으로 첫 유효 플레이어 찾기 */
         let si = gameState.players.findIndex(p => p.id === gameState.lastWinnerId);
         if (si === -1 || gameState.players[si].folded || gameState.players[si].hasLeft)
             si = gameState.players.findIndex(p => !p.folded && !p.hasLeft);
 
-        /* si부터 시작해서 첫 번째 플레이 가능한 사람 찾기 */
         let total = gameState.players.length;
         for (let i = 0; i < total; i++) {
             let idx = (si + i) % total;
@@ -765,7 +840,6 @@
                 return;
             }
         }
-        /* 모두 올인 상태 → 바로 다음 페이즈 */
         broadcastState();
         nextPhase();
     }
@@ -904,14 +978,14 @@
         return gameState.winningCards.some(wc => wc.suit === card.suit && wc.value === card.value);
     }
 
-    /* ★ 카드 HTML — 유니코드 문자만! 배경 도형 없음 */
+    /* ★ 카드 HTML — 유니코드 + 뒤 배경 도형 */
     function getCardHTML(card, isNew) {
         if (!card) return '';
         const dealCls = isNew ? 'deal-in' : '';
 
-        // 뒷면 🂠
+        // 뒷면
         if (card === 'hidden' || typeof card !== 'object' || !card.suit || !card.value) {
-            return `<div class="card-slot ${dealCls}"><span class="unicode-char back">\u{1F0A0}</span></div>`;
+            return `<div class="card-slot ${dealCls}"><div class="card-bg bg-back"></div><span class="unicode-char back">\u{1F0A0}</span></div>`;
         }
 
         // 앞면
@@ -919,7 +993,7 @@
         const hlCls    = (gameState.phase === 'showdown' && isWinningCard(card)) ? 'highlight-card' : '';
         const ch       = getUnicodeCard(card.suit, card.value);
 
-        return `<div class="card-slot ${dealCls} ${hlCls}"><span class="unicode-char ${colorCls}">${ch}</span></div>`;
+        return `<div class="card-slot ${dealCls} ${hlCls}"><div class="card-bg bg-front"></div><span class="unicode-char ${colorCls}">${ch}</span></div>`;
     }
 
     let localTimerInterval = null;
@@ -930,7 +1004,6 @@
         document.getElementById('phaseInfo').innerText = gameState.phase.toUpperCase();
         document.getElementById('potInfo').innerText   = 'POT: ' + gameState.pot;
 
-        /* ★ 스타트 버튼 + 어두운 오버레이 */
         const startBtn = document.getElementById('hostStartBtn');
         const startOverlay = document.getElementById('startOverlay');
         const showStart = isHost && gameState.phase === 'waiting' && gameState.players.filter(p=>!p.hasLeft).length > 1;
@@ -987,19 +1060,14 @@
             let shifted = (index - myIndex + total) % total;
             let angle   = (shifted / total) * Math.PI * 2 + (Math.PI / 2);
             let mobile  = window.innerWidth <= 600;
-            let rx = mobile ? 44 : 45, ry = mobile ? 38 : 34;
+            let rx = mobile ? 44 : 45, ry = mobile ? 36 : 34;
             let left = 50 + rx * Math.cos(angle);
             let top  = 50 + ry * Math.sin(angle);
 
             let displayCards = '';
             if (p.cards && p.cards.length > 0) {
-                const isMe   = (p.token === myToken);
-                let canSee;
-                if (isHost) {
-                    canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
-                } else {
-                    canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
-                }
+                const isMe = (p.token === myToken);
+                const canSee = isMe || (gameState.phase === 'showdown' && p.wantsToShow);
                 displayCards = p.cards.map(c => {
                     const actual = (canSee && c !== 'hidden') ? c : 'hidden';
                     const isNewCard = isMe && isJustDealt;
@@ -1028,7 +1096,7 @@
                     }
                 }
             }
-            let nameStyle  = isMeClass ? '' : `background:${p.color};`;
+            let nameStyle = isMeClass ? '' : `background:${p.color};`;
 
             playersDiv.innerHTML += `
                 <div class="player ${isActive} ${isFolded} ${isDisconn} ${hasBet} ${isWait} ${isLeader} ${isMeClass}" id="player-${p.id}" style="left:${left}%;top:${top}%;">
@@ -1085,7 +1153,7 @@
             localTimerInterval = setInterval(() => {
                 if (gameState.phase === 'showdown') {
                     let rem = Math.max(0, Math.ceil((gameState.nextGameTime - Date.now()) / 1000));
-                    banner.innerText = gameState.winnerMsg + '\nNext round in ' + rem + 's';
+                    banner.innerText = gameState.winnerMsg + '\nNext ' + rem + 's';
                 }
                 document.querySelectorAll('.player-timer').forEach(el => el.innerText = '');
                 if (gameState.phase !== 'waiting' && gameState.phase !== 'showdown' && gameState.turnEndTime > 0) {
@@ -1101,6 +1169,9 @@
         document.getElementById('mainActions').style.display = show ? 'none' : 'flex';
         document.getElementById('raisePanel').style.display  = show ? 'flex' : 'none';
         if (show) {
+            // 레이즈 패널 열 때 조작창 높이 자동 키우기
+            let wrapper = document.getElementById('controlsWrapper');
+            if (wrapper.offsetHeight < 200) wrapper.style.height = '200px';
             let p = gameState.players.find(x => x.id === myId);
             customRaiseAmount = gameState.currentBet === 0 ? gameState.baseBet : gameState.currentBet * 2;
             customRaiseAmount = Math.floor(customRaiseAmount / 10) * 10;
@@ -1139,5 +1210,5 @@
         toggleRaisePanel(false);
     }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a07079ded93c16dd',t:'MTc4MDY3NjEyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0708b7accf583f1',t:'MTc4MDY3Njg0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
